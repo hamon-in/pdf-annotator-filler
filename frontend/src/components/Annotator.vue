@@ -10,8 +10,8 @@
       <PDF @get="getcan" :getcan="getcan" :setPdfSize="setPdfSize" :arrayBuffer="arrayBuffer" v-if="arrayBuffer"></PDF>
       <div class="area-select">
       <SelectionPreview :znamech="znamech" :coordinates="coordinates" v-if="arrayBuffer"></SelectionPreview>
-      <AreaSelect :highlight="null" :fill="fill" :coordinates="coordinates" ref="activeSelector" color="rgb(0,255,0)" active="true"></AreaSelect>
-      <div v-if="fill === false">
+      <AreaSelect :highlight="null" :open="open" :coordinates="coordinates" ref="activeSelector" color="rgb(0,255,0)" active="true"></AreaSelect>
+      <div v-if="open === false">
       <AreaSelect v-for="(ob,ind) in obs"
         :key="old_obs.length + ind"
         :coordinates="ob"
@@ -19,7 +19,7 @@
         :pageOffset_top="ob.pageOffset_top"
         :pageOffset_left="ob.pageOffset_left"
         :dimensions="dimensions"
-        :fill="false"
+        :open="false"
         :entry="entry"
         :highlight="highlight"
       ></AreaSelect>
@@ -32,7 +32,7 @@
         :pageOffset_top="old_ob.pageOffset_top"
         :pageOffset_left="old_ob.pageOffset_left"
         :dimensions="dimensions"
-        :fill="fill"
+        :open="open"
         :entry="entry"
         :highlight="highlight"
       >{{this.o_ind}}</AreaSelect>
@@ -82,7 +82,7 @@ export default {
     //   })
     // doc.output('dataurlnewwindow')
   },
-  props: ['src', 'name', 'selections', 'addSelection', 'arrayBuffer', 'setPdfSize', 'dimensions', 'pageoffset', 'obs', 'old_obs', 'fill', 'entry', 'znamech', 'getcan', 'highlight'],
+  props: ['src', 'name', 'selections', 'addSelection', 'arrayBuffer', 'setPdfSize', 'dimensions', 'pageoffset', 'obs', 'old_obs', 'open', 'entry', 'znamech', 'getcan', 'highlight'],
   data () {
     return {
       pdfsize: 'setPdfSize',
@@ -144,7 +144,7 @@ export default {
       event.stopPropagation()
       event.preventDefault()
       this.down = false
-      if (this.fill === false) {
+      if (this.open === false) {
         this.addSelection(this.coordinates)
         this.reset()
       }

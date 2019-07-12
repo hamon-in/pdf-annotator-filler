@@ -5,8 +5,8 @@
       <option value="">Option 2</option>
     </select-->
     <div class='selection-box' :style="styleObject">
-      <span v-if="fill === false">{{ name }}</span>
-      <span v-if="fill === true">{{ entry[keyid] }}</span>
+      <span v-if="open === false">{{ name }}</span>
+      <span v-if="open === true">{{ entry[keyid] }}</span>
       <!--input type="text" :value="name"-->
     </div>
   </div>
@@ -17,20 +17,20 @@ import randomColor from 'randomcolor'
 
 export default {
   name: 'area-select',
-  props: ['coordinates', 'name', 'active', 'dimensions', 'pageoffset_top', 'pageoffset_left', 'fill', 'entry', 'keyid', 'highlight'],
+  props: ['coordinates', 'name', 'active', 'dimensions', 'pageoffset_top', 'pageoffset_left', 'open', 'entry', 'keyid', 'highlight'],
   created () {
     // console.log(this.entry)
     // console.log(this.keyid)
     // textFit(document.getElementsByClassName('selection-box'))
     console.log('AreaSelect created')
-    console.log(this.fill, this.coordinates, this.coordinates.left)
+    console.log(this.open, this.coordinates, this.coordinates.left)
     console.log(this.coordinates.pageOffset_left)
     // console.log({offset: this.pageoffset})
     // console.log(this.coordinates.lx)
     // console.log(this.coordinates.zname)
   },
   updated () {
-  //   if (this.fill === true) {
+  //   if (this.open === true) {
   //     this.name = this.entry[this.keyid]
   //     console.log(this.entry[this.keyid])
   //   }
@@ -52,7 +52,7 @@ export default {
           display: 'none'
         }
       }
-      if (this.fill === false) {
+      if (this.open === false) {
         if (this.coordinates.zname === this.highlight) {
           return {
             // left: this.coordinates.lx + this.pageoffset.left + 'px',

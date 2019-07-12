@@ -2,10 +2,11 @@
   <div class='editor'>
     <div class='sidebar'>
       <h1>PDF - Annotator</h1>
-      <Uploader @addfile="addfile" :notify="newFile"></Uploader>
+      <Uploader :annotation="annotation" @addfile="addfile" :notify="newFile"></Uploader>
+      <div v-if="annotation === true && open === false">
       <ZoneViewer :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="src"></ZoneViewer>
       <PDFZoneViewer @updateob="updateobj" :dimensions="pdfDimensions" :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="arrayBuffer"></PDFZoneViewer>
-      <div v-if="fill === false">
+      <div v-if="open === false">
         <div v-for="(o_i, o_ind) in old_obs" :key="o_ind">
           <div v-if="o_ind ===  o_editid">
             <input type="text" :value="o_i.zname" @keyup.13="o_edit(o_i,$event)">
@@ -30,18 +31,19 @@
             <center>submit</center>
           </button> 
         </div>
-          <button @click="fill = true">
-            <center>fill</center>
+          <button @click="get">
+            <center>open</center>
           </button> 
       </div>
       <div v-else>
-        <button @click="fill = false">
+        <button @click="open = false">
             <center>back</center>
         </button> 
       </div>
+      </div>
     </div>
-      <div class='content'>
-        <Annotator :highlight="highlight" :getcan="getcan" :znamech="znamech" :entry="entry" :fill="fill" :old_obs="old_obs" :pageoffset="pageoffset" :dimensions="pdfDimensions" :obs="obs" :src="src" :setPdfSize="setPdfSize" :arrayBuffer="arrayBuffer" :name="name" :selections="selections" :addSelection="addSelection"></Annotator>
+      <div v-if="annotation === true" class='content'>
+        <Annotator :v-if="open ===false" :highlight="highlight" :getcan="getcan" :znamech="znamech" :entry="entry" :open="open" :old_obs="old_obs" :pageoffset="pageoffset" :dimensions="pdfDimensions" :obs="obs" :src="src" :setPdfSize="setPdfSize" :arrayBuffer="arrayBuffer" :name="name" :selections="selections" :addSelection="addSelection"></Annotator>
         <!--div v-for="st in style" :key="st.c">
         <select name="2" id="2" :style="st.s">
           <option value="af">sdsdg</option>
@@ -70,6 +72,8 @@ export default {
   },
   data () {
     return {
+      annotation: true,
+      saved_files: [],
       highlight: null,
       can: false,
       sdel: false,
@@ -79,7 +83,7 @@ export default {
       ed_obs: [],
       zname: '',
       entry: ['mohamed zameel', 'ponnath [h]', 'pathazhakad', 'kodungallur', 'trissur'],
-      fill: false,
+      open: false,
       change_st: false,
       ch_cordinates: null,
       change_an: null,
@@ -107,6 +111,7 @@ export default {
   created () {
     console.log('Editor created')
     console.log(this.pdfDimensions)
+    this.get()
   },
   methods: {
     getcan (data) {
@@ -168,7 +173,23 @@ export default {
     },
     addfile (file) {
       this.file = file
-      console.log(file)
+      console.log('addfile')
+      if (this.saved_files.includes(file.name)) {
+        this.annotation = false
+        alert('already annoted file')
+      } else {
+        this.annotation = true
+      }
+      this.saved_files = []
+    },
+    get () {
+      this.$http.get('http://127.0.0.1:8000/get_pdfs').then(function (data) {
+        console.log(data)
+        this.saved_files = [...this.saved_files, ...data.body.map((item) => {
+          return item.pname
+        })]
+        console.log(this.saved_files)
+      })
     },
     post () {
       let formData = new FormData()
@@ -364,6 +385,7 @@ export default {
       // console.log(this.selections)
     },
     newFile: function (data) {
+      console.log('newfile')
       if (this.name === data.name) {
         this.change = false
       } else {

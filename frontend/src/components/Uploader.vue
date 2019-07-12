@@ -14,6 +14,8 @@ export default {
     notify: {
       type: Function,
       require: true
+    }, annotation: {
+      type: Boolean
     }
   },
   data () {

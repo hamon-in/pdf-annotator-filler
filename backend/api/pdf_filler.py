@@ -42,8 +42,8 @@ def fill_pdf(folder_path, pdf_path, data):
 		packet = io.BytesIO()
 		can = canvas.Canvas(packet)
 		#get the actual page size of the pdf
-		height = int(list(old_pdf.getPage(index).mediaBox)[3])
-		width = int(list(old_pdf.getPage(index).mediaBox)[2])
+		height = int(list(old_pdf.getPage(pageno).mediaBox)[3])
+		width = int(list(old_pdf.getPage(pageno).mediaBox)[2])
 		#for all zones in current page
 		for zone in curr_page:
 			#get the actual coordinates

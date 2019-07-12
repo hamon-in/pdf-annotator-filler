@@ -121,23 +121,23 @@ def get_pdf(pdf_id):
 	output["zones"] = zoneArr
 	return jsonify(output)
 
-from .pdf_maker import *
+# from .pdf_maker import *
 
-@app.route('/gen_pdf/<int:pid>')
-def gen_pdf_func(pid):
-	gen_pdf(pid)
-	return jsonify({
-			'status': 200
-		})
+# @app.route('/gen_pdf/<int:pid>')
+# def gen_pdf_func(pid):
+# 	gen_pdf(pid)
+# 	return jsonify({
+# 			'status': 200
+# 		})
 
-@app.route('/fill/<int:pid>')
-def fill(pid):
-	pdf = Pdf.query.get(pid)
-	if not pdf:
-		return jsonify({
-			'status': 404
-		})
-	excel = request.files['excel']
-	pdf.efile = excel
-	pdf.ename = excel.filename
-	db.session.commit()
+# @app.route('/fill/<int:pid>')
+# def fill(pid):
+# 	pdf = Pdf.query.get(pid)
+# 	if not pdf:
+# 		return jsonify({
+# 			'status': 404
+# 		})
+# 	excel = request.files['excel']
+# 	pdf.efile = excel
+# 	pdf.ename = excel.filename
+# 	db.session.commit()

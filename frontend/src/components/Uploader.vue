@@ -5,29 +5,52 @@
       <p>or <label for="file">click to browse</label></p>
       <input type="file" id="file" name="file" @change="selected">
     </div>
+    <div>
+    <span :v-show="false">dvds{{ open }}</span>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: {
-    notify: {
-      type: Function,
-      require: true
-    }, annotation: {
-      type: Boolean
-    }
-  },
+  props: ['notify', 'n_file'],
   data () {
     return {
       name: null,
       pdf_file: null
     }
   },
+  updated () {
+    // if (this.n_file !== null) {
+    //   // this.getFile(this.n_file)
+    //   console.log('sfvsfv')
+    // }
+  },
   created () {
     console.log('Uploader created')
   },
+  computed: {
+    open () {
+      return this.n_open()
+    }
+  },
   methods: {
+    n_open () {
+      if (this.n_file !== null) {
+        let reader = new FileReader()
+        reader.addEventListener('load', this.notify({
+          name: 'wefwf',
+          arrayBuffer: this.n_file
+        }), false)
+        reader.readAsArrayBuffer(this.n_file)
+        this.pdf_file = this.n_file
+        this.$emit('addfile', this.pdf_file)
+        console.log('sfvsfv')
+        return 1
+      } else {
+        return 0
+      }
+    },
     processReaderImage: function (readerData) {
       this.notify({
         name: this.name,

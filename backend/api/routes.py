@@ -1,8 +1,15 @@
 from api.models import Pdf, Zone
-from flask import request, Response, jsonify, render_template
+from flask import request, Response, jsonify, render_template,send_file,escape,url_for,redirect,send_from_directory
 from api import app, db
 from api.schema import zone_schema, pdf_schema, zones_schema, pdfs_schema
-import json
+from api.pdf_filler import gen_pdf
+from io import BytesIO
+from werkzeug.utils import secure_filename
+import os
+
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+# app.config['UPLOAD_FOLDER'] = ''
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 @app.route('/', methods=['GET'])
 def home():
@@ -11,12 +18,16 @@ def home():
 @app.route('/post_pdf', methods=['POST'])
 def post_pdf():
 	pfile = request.files['pfile']
+	pfile.save(APP_ROOT+'/'+pfile.filename)
+	# print(pfile)
 	#create a pdf instance by passing respective data
 	pdf = Pdf(pfile.filename,pfile.read())
+	# print(BytesIO(pdf.pfile))
 	#save to database
 	db.session.add(pdf)
 	db.session.commit()
-	return pdf_schema.jsonify(pdf)
+	# return pdf_schema.jsonify(pdf)
+	return url_for(os.path.join(APP_ROOT),filename=pfile.filename)
 
 @app.route('/put_zones', methods=['PUT'])
 def put_zones():
@@ -94,8 +105,19 @@ def get_zones():
 	zones = zones_schema.dump(Zone.query.all())
 	return jsonify(zones.data)
 
+@app.route('/get_pdf', methods=['POST'])
+def get_pdf():
+	pid = request.json['pid']
+	print(pid)
+	pdf = Pdf.query.filter_by(pid=pid).first()
+	# print(Pdf.url(pdf.pname))
+	# return send_file(BytesIO(pdf.pfile),attachment_filename=pdf.pname, as_attachment=True,mimetype='multipart/form-data')
+	# uploads = os.path.join(app.config['UPLOAD_FOLDER'],'/')
+	# print(uploads)
+	return send_file(APP_ROOT+'/'+pdf.pname, mimetype='application/pdf')
+
 @app.route('/get_pdf/<int:pdf_id>')
-def get_pdf(pdf_id):
+def getpdf(pdf_id):
 	pdf = Pdf.query.get(pdf_id)
 	zones = pdf.zones
 	output = {}
@@ -121,23 +143,29 @@ def get_pdf(pdf_id):
 	output["zones"] = zoneArr
 	return jsonify(output)
 
-# from .pdf_maker import *
+@app.route('/fill/<int:pid>')
+def fill(pid):
+	return gen_pdf(pid)
 
-# @app.route('/gen_pdf/<int:pid>')
-# def gen_pdf_func(pid):
-# 	gen_pdf(pid)
-# 	return jsonify({
-# 			'status': 200
-# 		})
+@app.route('/upload')
+def upload_excel():
+	return render_template('excel_uploader.html')
 
-# @app.route('/fill/<int:pid>')
-# def fill(pid):
-# 	pdf = Pdf.query.get(pid)
-# 	if not pdf:
-# 		return jsonify({
-# 			'status': 404
-# 		})
-# 	excel = request.files['excel']
-# 	pdf.efile = excel
-# 	pdf.ename = excel.filename
-# 	db.session.commit()
+@app.route('/post_excel', methods=['POST'])
+def post_excel():
+	efile = request.files['excel']
+	ename = efile.filename
+	pid = request.form['pid']
+	#attatch the excel to the table Pdf
+	pdf = Pdf.query.get(pid)
+	resp = {
+		'status': 200
+	}
+	if pdf:
+		pdf.efile = efile.read()
+		pdf.ename = ename
+		db.session.commit()
+	else:
+		resp['status'] = 404
+	
+	return jsonify(resp)

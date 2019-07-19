@@ -1,12 +1,22 @@
 <template>
-  <div class='editor'>
+<div>
+  <div class='login' v-if='login'>
+    <button @click='f_signup'>signup</button>
+    <button @click='f_signin'>signin</button>
+    <signup v-if='signup'></signup>
+    <signin v-if='signin'></signin>
+
+  </div>
+  <div class='editor' v-else>
     <div class='sidebar'>
       <h1>PDF - Annotator</h1>
-      <Uploader :annotation="annotation" @addfile="addfile" :notify="newFile"></Uploader>
-      <div v-if="annotation === true && open === false">
+      <Uploader :n_file="n_file" :annotation="annotation" @addfile="addfile" :notify="newFile"></Uploader>
+      <div v-if="annotation === true">
       <ZoneViewer :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="src"></ZoneViewer>
       <PDFZoneViewer @updateob="updateobj" :dimensions="pdfDimensions" :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="arrayBuffer"></PDFZoneViewer>
+      </div>
       <div v-if="open === false">
+        <div v-if="annotation === true">
         <div v-for="(o_i, o_ind) in old_obs" :key="o_ind">
           <div v-if="o_ind ===  o_editid">
             <input type="text" :value="o_i.zname" @keyup.13="o_edit(o_i,$event)">
@@ -31,15 +41,19 @@
             <center>submit</center>
           </button> 
         </div>
+        </div>
           <button @click="get">
             <center>open</center>
           </button> 
       </div>
       <div v-else>
+        <div v-for="(file,i) in saved_files" :key=i>
+          {{ file }}
+          <button> open </button>
+        </div>
         <button @click="open = false">
             <center>back</center>
         </button> 
-      </div>
       </div>
     </div>
       <div v-if="annotation === true" class='content'>
@@ -53,6 +67,7 @@
         </div-->
       </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -61,6 +76,8 @@ import Annotator from '@/components/Annotator'
 import ZoneViewer from '@/components/ZoneViewer'
 import PDFZoneViewer from '@/components/PDFZoneViewer'
 import randomColor from 'randomcolor'
+import signin from '@/components/signin'
+import signup from '@/components/signup'
 
 export default {
   name: 'editor',
@@ -68,10 +85,16 @@ export default {
     Uploader,
     Annotator,
     ZoneViewer,
-    PDFZoneViewer
+    PDFZoneViewer,
+    signup,
+    signin
   },
   data () {
     return {
+      signup: false,
+      signin: false,
+      login: true,
+      n_file: null,
       annotation: true,
       saved_files: [],
       highlight: null,
@@ -111,12 +134,26 @@ export default {
   created () {
     console.log('Editor created')
     console.log(this.pdfDimensions)
-    this.get()
+    this.$http.get('http://127.0.0.1:8000/get_pdfs').then(function (data) {
+      console.log(data)
+      this.saved_files = data.body.map((item) => {
+        return item.pname
+      })
+      console.log(this.saved_files)
+    })
   },
   methods: {
+    f_signup () {
+      this.signup = true
+      this.signin = false
+    },
+    f_signin () {
+      this.signup = false
+      this.signin = true
+    },
     getcan (data) {
       this.can = data
-      console.log(data[0].height)
+      // console.log(data[0].height)
     },
     znamech (data) {
       this.zname = data
@@ -173,22 +210,42 @@ export default {
     },
     addfile (file) {
       this.file = file
-      console.log('addfile')
+      console.log(file)
       if (this.saved_files.includes(file.name)) {
         this.annotation = false
         alert('already annoted file')
       } else {
         this.annotation = true
       }
-      this.saved_files = []
+      // this.saved_files = []
     },
     get () {
       this.$http.get('http://127.0.0.1:8000/get_pdfs').then(function (data) {
         console.log(data)
-        this.saved_files = [...this.saved_files, ...data.body.map((item) => {
+        this.saved_files = data.body.map((item) => {
           return item.pname
-        })]
+        })
         console.log(this.saved_files)
+        this.open = true
+        this.$http.post('http://127.0.0.1:8000/get_pdf', {pid: 1}).then(function (data) {
+          console.log(data)
+          let binStr = btoa(encodeURIComponent(data.body).replace(/%([0-9A-F]{2})/g,
+          function toSolidBytes (match, p1) {
+            return String.fromCharCode('0x' + p1)
+          }))
+          // let binStr = atob(data.body)
+          console.log(binStr)
+          let bytes = new Uint8Array(binStr.length)
+          for (let i = 0; i < binStr.length; i++) {
+            bytes[i] = binStr.charCodeAt(i)
+          }
+          console.log(bytes)
+          this.n_file = new Blob(bytes)
+          // this.n_file = new Blob(data.body)
+          console.log(this.n_file)
+          this.open = false
+          this.annotation = true
+        })
       })
     },
     post () {
@@ -230,6 +287,7 @@ export default {
             // console.log(data.pid)
             this.change = false
             this.req1_stat = false
+            this.saved_files = [...this.saved_files, data.body.pname]
             this.poost()
           }).catch(function (data) {
             console.log('From catch')
@@ -393,9 +451,11 @@ export default {
       }
       // console.log(typeof data.arrayBuffer)
       this.name = data.name
+      console.log(data.name)
       this.src = data.src
+      console.log(data.src)
       this.arrayBuffer = data.arrayBuffer
-      // console.log(this.array)
+      console.log(this.arrayBuffer)
       this.selections = []
       this.obs = []
       this.old_obs = []

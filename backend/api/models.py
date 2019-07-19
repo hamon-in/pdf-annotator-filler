@@ -3,7 +3,7 @@ from api import db
 class Pdf(db.Model):
 	pid = db.Column(db.Integer, primary_key=True)
 	pname = db.Column(db.String(255), nullable=False)
-	pfile = db.Column(db.LargeBinary)
+	pfile = db.Column(db.BLOB)
 	zones = db.relationship('Zone', backref='zone', lazy=True)
 	# efile = db.Column(db.LargeBinary, nullable=True)
 	# ename = db.Column(db.String(255), nullable=True)
@@ -17,6 +17,7 @@ class Pdf(db.Model):
 
 class Zone(db.Model):
 	zid = db.Column(db.Integer, primary_key=True)
+	zdata = db.Column(db.String(500), nullable=True)
 	zname = db.Column(db.String(50), nullable=False)
 	left = db.Column(db.Integer, nullable=False)
 	top = db.Column(db.Integer, nullable=False)

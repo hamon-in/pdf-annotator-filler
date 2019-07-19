@@ -48,6 +48,9 @@ export default {
           //   console.log(r[i])
           // }
           // console.log(viewport)
+          console.log('dd')
+          console.log(viewport.width, viewport.height)
+          console.log('ff')
           this.setPdfSize(viewport.width, viewport.height)
           this.width = viewport.width
           this.pdfViewer.setDocument(pdf).then(data => {

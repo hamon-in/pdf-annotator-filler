@@ -93,7 +93,7 @@ export default {
     return {
       signup: false,
       signin: false,
-      login: true,
+      login: false,
       n_file: null,
       annotation: true,
       saved_files: [],

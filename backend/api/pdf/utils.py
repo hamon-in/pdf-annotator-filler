@@ -3,7 +3,7 @@ from PyPDF2 import PdfFileWriter, PdfFileReader
 import io
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter,A4
-from api.models import Pdf
+from api.pdf.models import Pdf
 import datetime
 import os
 from flask import jsonify, send_file
@@ -93,7 +93,6 @@ def process_excel(pdf, folder_path, pdf_path):
 		#generate pdf for each record
 		fill_pdf(folder_path,pdf_path,arr[i],i)
 		
-
 def gen_pdf(pid):
 	folder_path = create_dir()
 	#if exists send 500 error

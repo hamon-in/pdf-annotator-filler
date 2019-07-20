@@ -5,7 +5,6 @@
     <button @click='f_signin'>signin</button>
     <signup v-if='signup'></signup>
     <signin v-if='signin'></signin>
-
   </div>
   <div class='editor' v-else>
     <div class='sidebar'>

@@ -7,6 +7,7 @@
     <signin :f_signin="f_signin" v-if='signin'></signin>
   </div>
   <div v-else>
+    <button @click="f_signin(false,false,true,null)">signout</button>
     <div class="purpose" v-if="purpose">
       <button @click="f_purpose(false)">filler</button>
       <button @click="f_purpose(true)">annotator</button>
@@ -21,9 +22,8 @@
       </div>
       <div class='editor' v-else>
         <div class='sidebar'>
-          <button @click="f_signin(false,false,true,null)">signout</button>
           <h1>PDF - Annotator</h1>
-          <Uploader v-if="!open" :n_file="n_file" :annotation="annotation" @addfile="addfile" :notify="newFile"></Uploader>
+          <Uploader v-show="!open" :n_file="n_file" :annotation="annotation" @addfile="addfile" :notify="newFile"></Uploader>
           <div v-if="annotation === true">
           <ZoneViewer :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="src"></ZoneViewer>
           <PDFZoneViewer @updateob="updateobj" :dimensions="pdfDimensions" :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="arrayBuffer"></PDFZoneViewer>
@@ -80,7 +80,7 @@
             </div-->
           </div>
       </div>
-      <button @click="purpose=true">back</button>
+      <button v-if="!open" @click="purpose=true">back</button>
     </div>
   </div>
 </div>
@@ -156,14 +156,18 @@ export default {
     console.log(this.pdfDimensions)
   },
   methods: {
+    file_open() {
+
+    },
     f_purpose (annotation) {
       this.annotation = annotation,
       this.purpose = false
     },
-    f_signin (i,u,l,key) {
+    f_signin (i,u,l,p,key) {
       this.signup = u
       this.signin = i
       this.login = l
+      this.purpose = true
       this.key = key
       if(!l) 
       {
@@ -535,7 +539,7 @@ export default {
 }
 
 .sidebar {
-  position: absolute;
+  position: relative;
   width: 400px;
   top: 0;
   left: 0;

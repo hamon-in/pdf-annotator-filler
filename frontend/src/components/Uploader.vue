@@ -65,7 +65,7 @@ export default {
     },
     getFile: function (fileList) {
       let file = fileList[0]
-
+      console.log(file)
       this.name = file.name
 
       if (file.type.match('image.*')) {

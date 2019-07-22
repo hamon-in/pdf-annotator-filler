@@ -235,7 +235,7 @@ export default {
     },
     addfile (file) {
       this.file = file
-      console.log(file)
+      // console.log(file)
       if (this.saved_files.includes(file.name)) {
         this.annotation = false
         alert('already annoted file')
@@ -474,13 +474,14 @@ export default {
       } else {
         this.change = true
       }
+      // console.log(data)
       // console.log(typeof data.arrayBuffer)
       this.name = data.name
-      console.log(data.name)
+      // console.log(data.name)
       this.src = data.src
-      console.log(data.src)
+      // console.log(data.src)
       this.arrayBuffer = data.arrayBuffer
-      console.log(this.arrayBuffer)
+      // console.log(this.arrayBuffer)
       this.selections = []
       this.obs = []
       this.old_obs = []

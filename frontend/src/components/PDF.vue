@@ -53,7 +53,7 @@ export default {
           console.log('ff')
           this.setPdfSize(viewport.width, viewport.height)
           this.width = viewport.width
-          console.log(pdf)
+          // console.log(pdf)
           await this.pdfViewer.setDocument(pdf)
           window.scrollTo(0, 0)
         })

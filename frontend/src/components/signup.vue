@@ -9,22 +9,48 @@
 
 <script>
 
-    // Document.getElementByid('submit').addEventListener('click', function (e) {
-    //         e.preventDefault()
-    //         this.$http.post('http://127.0.0.1:8000/auth/register', {
-    //             username: this.email,
-    //             username: this.username,
-    //             password: null.password
-    //         }).then(data => console.log(data))
-    //     })
-
 export default {
+    props: ['f_signin'],
     data () {
         return {
             email: null,
             username: null,
-            password: null
+            password: null,
+            login: true,
+            signup: true
         }
+    },
+    mounted () {
+        self = this
+        document.querySelector('#submit').addEventListener('click',async function (e) {
+            e.preventDefault()
+            await self.$http.post('http://127.0.0.1:8000/auth/register', {
+                email: self.email,
+                username: self.username,
+                password: self.password
+            }).then(data => {
+                console.log(data)
+                console.log('prevented')
+                if(Object.entries(data.body).length === 1) {
+                    self.login = false
+                    self.signup = false
+                    console.log(self.login)
+                } else {
+                    alert('invalid entry')
+                }
+            })
+            if(!self.login) {
+                self.$http.post('http://127.0.0.1:8000/auth/login', {
+                    username: self.username,
+                    password: self.password
+                }).then(data => {
+                    console.log(data)
+                    console.log('prevented')
+                    self.f_signin(false,false,false,data.body.key)
+                })
+            }
+        })
+
     }
 }
 </script>

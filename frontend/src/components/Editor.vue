@@ -1,70 +1,87 @@
 <template>
 <div>
   <div class='login' v-if='login'>
-    <button @click='f_signup'>signup</button>
-    <button @click='f_signin'>signin</button>
-    <signup v-if='signup'></signup>
-    <signin v-if='signin'></signin>
+    <button @click='f_signin(false,true,true,null)'>signup</button>
+    <button @click='f_signin(true,false,true,null)'>signin</button>
+    <signup :f_signin="f_signin" v-if='signup'></signup>
+    <signin :f_signin="f_signin" v-if='signin'></signin>
   </div>
-  <div class='editor' v-else>
-    <div class='sidebar'>
-      <h1>PDF - Annotator</h1>
-      <Uploader :n_file="n_file" :annotation="annotation" @addfile="addfile" :notify="newFile"></Uploader>
-      <div v-if="annotation === true">
-      <ZoneViewer :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="src"></ZoneViewer>
-      <PDFZoneViewer @updateob="updateobj" :dimensions="pdfDimensions" :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="arrayBuffer"></PDFZoneViewer>
+  <div v-else>
+    <div class="purpose" v-if="purpose">
+      <button @click="f_purpose(false)">filler</button>
+      <button @click="f_purpose(true)">annotator</button>
+    </div>
+    <div v-else>
+      <div class="filler" v-if="!annotation">
+        <filler></filler>
+        <div v-for="(file,i) in saved_files" :key=i>
+              {{ file }}
+              <button> open </button>
+            </div>
       </div>
-      <div v-if="open === false">
-        <div v-if="annotation === true">
-        <div v-for="(o_i, o_ind) in old_obs" :key="o_ind">
-          <div v-if="o_ind ===  o_editid">
-            <input type="text" :value="o_i.zname" @keyup.13="o_edit(o_i,$event)">
+      <div class='editor' v-else>
+        <div class='sidebar'>
+          <button @click="f_signin(false,false,true,null)">signout</button>
+          <h1>PDF - Annotator</h1>
+          <Uploader v-if="!open" :n_file="n_file" :annotation="annotation" @addfile="addfile" :notify="newFile"></Uploader>
+          <div v-if="annotation === true">
+          <ZoneViewer :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="src"></ZoneViewer>
+          <PDFZoneViewer @updateob="updateobj" :dimensions="pdfDimensions" :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="arrayBuffer"></PDFZoneViewer>
+          </div>
+          <div v-if="open === false">
+            <div v-if="annotation === true">
+            <div v-for="(o_i, o_ind) in old_obs" :key="o_ind">
+              <div v-if="o_ind ===  o_editid">
+                <input type="text" :value="o_i.zname" @keyup.13="o_edit(o_i,$event)">
+              </div>
+              <div v-else>
+                {{ o_i.zname }}
+                <div v-if="o_ind === change_an && change_st">
+                  {{ f_change_an(o_i) }}
+                </div>
+                <button @click="o_editid = o_ind">edit</button>
+                <button @click="o_del(o_ind)">x</button>
+                <button @click="change_an = o_ind">change</button>
+              </div>
+            </div>
+            <div v-for="(i, ind) in obs" :key="old_obs.length + ind">
+              <input type="text" :value="i.zname" @mouseleave="highlight=null" @mouseover="highlight=i.zname" @keyup.13="edit(i,$event)" :can="true">
+              {{ }}
+              <button @click="del(ind)">x</button>
+            </div>
+            <div>
+              <button @click="poost">
+                <center>submit</center>
+              </button> 
+            </div>
+            </div>
+              <button @click="get">
+                <center>open</center>
+              </button> 
           </div>
           <div v-else>
-            {{ o_i.zname }}
-            <div v-if="o_ind === change_an && change_st">
-              {{ f_change_an(o_i) }}
+            <div v-for="(file,i) in saved_files" :key=i>
+              {{ file }}
+              <button> open </button>
             </div>
-            <button @click="o_editid = o_ind">edit</button>
-            <button @click="o_del(o_ind)">x</button>
-            <button @click="change_an = o_ind">change</button>
+            <button @click="open = false">
+                <center>back</center>
+            </button> 
           </div>
         </div>
-        <div v-for="(i, ind) in obs" :key="old_obs.length + ind">
-          <input type="text" :value="i.zname" @mouseleave="highlight=null" @mouseover="highlight=i.zname" @keyup.13="edit(i,$event)" :can="true">
-          {{ }}
-          <button @click="del(ind)">x</button>
-        </div>
-        <div>
-          <button @click="poost">
-            <center>submit</center>
-          </button> 
-        </div>
-        </div>
-          <button @click="get">
-            <center>open</center>
-          </button> 
+          <div v-if="annotation === true" class='content'>
+            <Annotator :v-if="open ===false" :highlight="highlight" :getcan="getcan" :znamech="znamech" :entry="entry" :open="open" :old_obs="old_obs" :pageoffset="pageoffset" :dimensions="pdfDimensions" :obs="obs" :src="src" :setPdfSize="setPdfSize" :arrayBuffer="arrayBuffer" :name="name" :selections="selections" :addSelection="addSelection"></Annotator>
+            <!--div v-for="st in style" :key="st.c">
+            <select name="2" id="2" :style="st.s">
+              <option value="af">sdsdg</option>
+              <option value="a">fadfa</option>
+            </select>
+            <input type="text" value="box1" :style="{...st.s,position: absolute}">
+            </div-->
+          </div>
       </div>
-      <div v-else>
-        <div v-for="(file,i) in saved_files" :key=i>
-          {{ file }}
-          <button> open </button>
-        </div>
-        <button @click="open = false">
-            <center>back</center>
-        </button> 
-      </div>
+      <button @click="purpose=true">back</button>
     </div>
-      <div v-if="annotation === true" class='content'>
-        <Annotator :v-if="open ===false" :highlight="highlight" :getcan="getcan" :znamech="znamech" :entry="entry" :open="open" :old_obs="old_obs" :pageoffset="pageoffset" :dimensions="pdfDimensions" :obs="obs" :src="src" :setPdfSize="setPdfSize" :arrayBuffer="arrayBuffer" :name="name" :selections="selections" :addSelection="addSelection"></Annotator>
-        <!--div v-for="st in style" :key="st.c">
-        <select name="2" id="2" :style="st.s">
-          <option value="af">sdsdg</option>
-          <option value="a">fadfa</option>
-        </select>
-        <input type="text" value="box1" :style="{...st.s,position: absolute}">
-        </div-->
-      </div>
   </div>
 </div>
 </template>
@@ -77,6 +94,7 @@ import PDFZoneViewer from '@/components/PDFZoneViewer'
 import randomColor from 'randomcolor'
 import signin from '@/components/signin'
 import signup from '@/components/signup'
+import filler from '@/components/filler'
 
 export default {
   name: 'editor',
@@ -86,13 +104,16 @@ export default {
     ZoneViewer,
     PDFZoneViewer,
     signup,
-    signin
+    signin,
+    filler
   },
   data () {
     return {
+      purpose: true,
+      key: null,
       signup: false,
       signin: false,
-      login: false,
+      login: true,
       n_file: null,
       annotation: true,
       saved_files: [],
@@ -133,22 +154,27 @@ export default {
   created () {
     console.log('Editor created')
     console.log(this.pdfDimensions)
-    this.$http.get('http://127.0.0.1:8000/get_pdfs').then(function (data) {
-      console.log(data)
-      this.saved_files = data.body.map((item) => {
-        return item.pname
-      })
-      console.log(this.saved_files)
-    })
   },
   methods: {
-    f_signup () {
-      this.signup = true
-      this.signin = false
+    f_purpose (annotation) {
+      this.annotation = annotation,
+      this.purpose = false
     },
-    f_signin () {
-      this.signup = false
-      this.signin = true
+    f_signin (i,u,l,key) {
+      this.signup = u
+      this.signin = i
+      this.login = l
+      this.key = key
+      if(!l) 
+      {
+        this.$http.get(`http://127.0.0.1:8000/pdf?key=${key}`).then(function (data) {
+          console.log(data)
+          this.saved_files = data.body.map((item) => {
+            return item.pname
+          })
+          console.log(this.saved_files)
+        })
+      }
     },
     getcan (data) {
       this.can = data
@@ -219,40 +245,39 @@ export default {
       // this.saved_files = []
     },
     get () {
-      this.$http.get('http://127.0.0.1:8000/get_pdfs').then(function (data) {
+      this.$http.get(`http://127.0.0.1:8000/pdf?key=${this.key}`).then(function (data) {
         console.log(data)
         this.saved_files = data.body.map((item) => {
           return item.pname
         })
         console.log(this.saved_files)
         this.open = true
-        this.$http.post('http://127.0.0.1:8000/get_pdf', {pid: 1}).then(function (data) {
-          console.log(data)
-          let binStr = btoa(encodeURIComponent(data.body).replace(/%([0-9A-F]{2})/g,
-          function toSolidBytes (match, p1) {
-            return String.fromCharCode('0x' + p1)
-          }))
-          // let binStr = atob(data.body)
-          console.log(binStr)
-          let bytes = new Uint8Array(binStr.length)
-          for (let i = 0; i < binStr.length; i++) {
-            bytes[i] = binStr.charCodeAt(i)
-          }
-          console.log(bytes)
-          this.n_file = new Blob(bytes)
-          // this.n_file = new Blob(data.body)
-          console.log(this.n_file)
-          this.open = false
-          this.annotation = true
-        })
+        // this.$http.post('http://127.0.0.1:8000/get_pdf', {pid: 1}).then(function (data) {
+        //   console.log(data)
+        //   let binStr = btoa(encodeURIComponent(data.body).replace(/%([0-9A-F]{2})/g,
+        //   function toSolidBytes (match, p1) {
+        //     return String.fromCharCode('0x' + p1)
+        //   }))
+        //   // let binStr = atob(data.body)
+        //   console.log(binStr)
+        //   let bytes = new Uint8Array(binStr.length)
+        //   for (let i = 0; i < binStr.length; i++) {
+        //     bytes[i] = binStr.charCodeAt(i)
+        //   }
+        //   console.log(bytes)
+        //   this.n_file = new Blob(bytes)
+        //   // this.n_file = new Blob(data.body)
+        //   console.log(this.n_file)
+        //   this.open = false
+        //   this.annotation = true
+        // })
       })
     },
     post () {
-      let formData = new FormData()
-      formData.append('pfile', this.file)
       if (this.change) {
         let data = new FormData()
         data.append('pfile', this.file)
+        data.append('key',this.key)
         // let config = {
         //   header: {
         //     'Content-Type': 'application/pdf'
@@ -260,7 +285,7 @@ export default {
         // }
         this.req1_stat = true
         // console.log(this.name)
-        this.$http.post('http://127.0.0.1:8000/post_pdf',
+        this.$http.post('http://127.0.0.1:8000/pdf/create',
         data,
           {
             headers: {
@@ -301,9 +326,10 @@ export default {
         // fd.append('zones', this.obs.cordinates)
         // console.log(this.obs.cordinates)
         if (this.scre) {
-          this.$http.post('http://127.0.0.1:8000/post_zones', {
+          this.$http.post('http://127.0.0.1:8000/zone/create', {
             pid: this.pid,
-            zones: this.obs
+            zones: this.obs,
+            key: this.key
           }, {
             headers: {
               'content-type': 'application/json'
@@ -323,7 +349,7 @@ export default {
           })
         }
         if (this.sed) {
-          this.$http.put('http://127.0.0.1:8000/put_zones', { zones: this.ed_obs }, {
+          this.$http.put('http://127.0.0.1:8000/zone/update', { zones: this.ed_obs,key: this.key }, {
             headers: {
               'content-type': 'application/json'
             }
@@ -340,7 +366,7 @@ export default {
         }
         if (this.sdel) {
           console.log(this.del_obs)
-          this.$http.delete('http://127.0.0.1:8000/delete_zones', {body: { zids: this.del_obs }}).then(function (data) {
+          this.$http.delete('http://127.0.0.1:8000/zone/delete', {body: { zids: this.del_obs,key: this.key }}).then(function (data) {
             console.log(data)
             console.log(this.obs)
             console.log('delete finished')

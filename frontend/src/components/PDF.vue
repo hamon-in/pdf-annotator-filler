@@ -36,7 +36,7 @@ export default {
     loadDocument () {
       console.log('new document')
       PDFJS.getDocument(this.arrayBuffer).then((pdf) => {
-        pdf.getPage(1).then((page) => {
+        pdf.getPage(1).then(async (page) => {
           var viewport = page.getViewport(1)
           // let r = document.getElementsByTagName('canvas')
           // let arr = Array.from(r).filter(function (item) {
@@ -53,9 +53,9 @@ export default {
           console.log('ff')
           this.setPdfSize(viewport.width, viewport.height)
           this.width = viewport.width
-          this.pdfViewer.setDocument(pdf).then(data => {
-            window.scrollTo(0, 0)
-          })
+          console.log(pdf)
+          await this.pdfViewer.setDocument(pdf)
+          window.scrollTo(0, 0)
         })
       })
     }

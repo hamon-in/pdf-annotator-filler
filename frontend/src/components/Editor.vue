@@ -62,7 +62,7 @@
           <div v-else>
             <div v-for="(file,i) in saved_files" :key=i>
               {{ file }}
-              <button> open </button>
+              <button @click="file_open"> open </button>
             </div>
             <button @click="open = false">
                 <center>back</center>
@@ -156,14 +156,39 @@ export default {
     console.log(this.pdfDimensions)
   },
   methods: {
-    file_open() {
-
+    async file_open(pid) {
+      let data = await fetch(`http://127.0.0.1:8000/pdf/${pid}`,{
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      data = await data.blob()
+      // .then(function (data) {
+          // console.log(data)
+          // let binStr = btoa(encodeURIComponent(data.body).replace(/%([0-9A-F]{2})/g,
+          // function toSolidBytes (match, p1) {
+          //   return String.fromCharCode('0x' + p1)
+          // }))
+          // let binStr = atob(data.body)
+          // console.log(binStr)
+          // let bytes = new Uint8Array(binStr.length)
+          // for (let i = 0; i < binStr.length; i++) {
+          //   bytes[i] = binStr.charCodeAt(i)
+          // }
+          // console.log(bytes)
+          // this.n_file = new Blob(bytes)
+          // this.n_file = new Blob(data.body)
+          console.log(this.n_file)
+          this.open = false
+          this.annotation = true
+        })
+      }
     },
     f_purpose (annotation) {
       this.annotation = annotation,
       this.purpose = false
     },
-    f_signin (i,u,l,p,key) {
+    async f_signin (i,u,l,key) {
       this.signup = u
       this.signin = i
       this.login = l
@@ -171,13 +196,14 @@ export default {
       this.key = key
       if(!l) 
       {
-        this.$http.get(`http://127.0.0.1:8000/pdf?key=${key}`).then(function (data) {
-          console.log(data)
+        let data = this.$http.get(`http://127.0.0.1:8000/pdf?key=${key}`)
+        console.log(data)
+        if(data !== undefined) {
           this.saved_files = data.body.map((item) => {
             return item.pname
           })
+        }
           console.log(this.saved_files)
-        })
       }
     },
     getcan (data) {
@@ -248,34 +274,16 @@ export default {
       }
       // this.saved_files = []
     },
-    get () {
-      this.$http.get(`http://127.0.0.1:8000/pdf?key=${this.key}`).then(function (data) {
+    async get () {
+      let data = await this.$http.get(`http://127.0.0.1:8000/pdf?key=${this.key}`)
         console.log(data)
-        this.saved_files = data.body.map((item) => {
-          return item.pname
-        })
+        if(data !== undefined) {
+          this.saved_files = data.body.map((item) => {
+            return item.pname
+          })
+        }
         console.log(this.saved_files)
         this.open = true
-        // this.$http.post('http://127.0.0.1:8000/get_pdf', {pid: 1}).then(function (data) {
-        //   console.log(data)
-        //   let binStr = btoa(encodeURIComponent(data.body).replace(/%([0-9A-F]{2})/g,
-        //   function toSolidBytes (match, p1) {
-        //     return String.fromCharCode('0x' + p1)
-        //   }))
-        //   // let binStr = atob(data.body)
-        //   console.log(binStr)
-        //   let bytes = new Uint8Array(binStr.length)
-        //   for (let i = 0; i < binStr.length; i++) {
-        //     bytes[i] = binStr.charCodeAt(i)
-        //   }
-        //   console.log(bytes)
-        //   this.n_file = new Blob(bytes)
-        //   // this.n_file = new Blob(data.body)
-        //   console.log(this.n_file)
-        //   this.open = false
-        //   this.annotation = true
-        // })
-      })
     },
     post () {
       if (this.change) {

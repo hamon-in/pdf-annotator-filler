@@ -5,6 +5,9 @@ from api.pdf.utils import gen_pdf
 from flask import request, jsonify
 from api.auth.decorators import logged
 from api.pdf.decorators import belongs_to
+from os.path import dirname,abspath
+
+pdfs_folder = dirname(dirname(abspath(__file__))) + '/static/'
 
 @app.route('/pdf', endpoint = 'pdf_all')
 @logged
@@ -46,11 +49,12 @@ def pdf_get_pdf(pid,*args,**kwargs):
 def pdf_create(*args, **kwargs):
 	pfile = request.files['pfile']
 	#create a pdf instance by passing respective data
-	pdf = Pdf(pfile.filename,pfile.read())
+	pdf = Pdf(pfile.filename)
 	pdf.uid = kwargs['uid']
 	#save to database
 	db.session.add(pdf)
 	db.session.commit()
+	pfile.save(pdfs_folder + pfile.filename + str(pdf.pid))
 	return pdf_schema.jsonify(pdf)
 
 @app.route('/pdf/fill/<int:pid>', endpoint = 'pdf_fill')

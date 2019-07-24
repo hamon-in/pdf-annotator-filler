@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  props: ['notify', 'n_file'],
+  props: ['notify', 'n_file', 'addfile'],
   data () {
     return {
       name: null,
@@ -31,26 +31,28 @@ export default {
   },
   computed: {
     open () {
-      return this.n_open()
+      if(this.n_file !== null) {
+        this.getFile([this.n_file])
+      }
     }
   },
   methods: {
-    n_open () {
-      if (this.n_file !== null) {
-        let reader = new FileReader()
-        reader.addEventListener('load', this.notify({
-          name: 'wefwf',
-          arrayBuffer: this.n_file
-        }), false)
-        reader.readAsArrayBuffer(this.n_file)
-        this.pdf_file = this.n_file
-        this.$emit('addfile', this.pdf_file)
-        console.log('sfvsfv')
-        return 1
-      } else {
-        return 0
-      }
-    },
+    // n_open () {
+    //   if (this.n_file !== null) {
+    //     let reader = new FileReader()
+    //     reader.addEventListener('load', this.notify({
+    //       name: 'wefwf',
+    //       arrayBuffer: this.n_file
+    //     }), false)
+    //     reader.readAsArrayBuffer(this.n_file)
+    //     this.pdf_file = this.n_file
+    //     this.$emit('addfile', this.pdf_file)
+    //     console.log('sfvsfv')
+    //     return 1
+    //   } else {
+    //     return 0
+    //   }
+    // },
     processReaderImage: function (readerData) {
       this.notify({
         name: this.name,
@@ -66,6 +68,12 @@ export default {
     getFile: function (fileList) {
       let file = fileList[0]
       console.log(file)
+      let ch = this.addfile(file)
+      // console.log(ch)
+      if(!ch) {
+        alert('already annoted file')
+        return
+      }
       this.name = file.name
 
       if (file.type.match('image.*')) {
@@ -77,11 +85,10 @@ export default {
         let reader = new FileReader()
         reader.addEventListener('load', this.processReaderPDF, false)
         reader.readAsArrayBuffer(file)
-        this.pdf_file = file
+        // this.pdf_file = file
       } else {
         alert('Not a PDF or image file')
       }
-      this.$emit('addfile', this.pdf_file)
     },
     selected: function (event) {
       this.getFile(event.target.files)

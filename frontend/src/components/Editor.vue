@@ -7,29 +7,30 @@
     <signin :f_signin="f_signin" v-if='signin'></signin>
   </div>
   <div v-else>
-    <button @click="f_signin(false,false,true,null)">signout</button>
+    <button @click="advanced_reset">signout</button>
     <div class="purpose" v-if="purpose">
-      <button @click="f_purpose(false)">filler</button>
-      <button @click="f_purpose(true)">annotator</button>
+      <button @click="f_purpose(4)">filler</button>
+      <button @click="f_purpose(0)">annotator</button>
     </div>
     <div v-else>
-      <div class="filler" v-if="!annotation">
-        <filler></filler>
-        <div v-for="(file,i) in saved_files" :key=i>
-              {{ file }}
-              <button> open </button>
-            </div>
+      <div class="filler" v-if="open === 2 || open === 4">
+        <h1>PDF - Filler</h1>
+        <filler v-if="open === 2" :u_key="key" :pid="pid"></filler>
+        <!-- <div v-for="(file,i) in saved_files" :key=i>
+              {{ file.pname }}
+              <button @click="file_open(file,2)"> open </button>
+            </div> -->
       </div>
-      <div class='editor' v-else>
+      <div class='editor'>
         <div class='sidebar'>
-          <h1>PDF - Annotator</h1>
-          <Uploader v-show="!open" :n_file="n_file" :annotation="annotation" @addfile="addfile" :notify="newFile"></Uploader>
-          <div v-if="annotation === true">
+          <h1 v-if="open === 0 || (open % 2) === 1">PDF - Annotator</h1>
+          <Uploader v-if="open < 3" v-show="open < 1" :n_file="n_file" :addfile="addfile" :notify="newFile"></Uploader>
+          <div v-if="open < 2">
           <ZoneViewer :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="src"></ZoneViewer>
           <PDFZoneViewer @updateob="updateobj" :dimensions="pdfDimensions" :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="arrayBuffer"></PDFZoneViewer>
           </div>
-          <div v-if="open === false">
-            <div v-if="annotation === true">
+          <div v-if="open < 3">
+            <div v-if="open < 2">
             <div v-for="(o_i, o_ind) in old_obs" :key="o_ind">
               <div v-if="o_ind ===  o_editid">
                 <input type="text" :value="o_i.zname" @keyup.13="o_edit(o_i,$event)">
@@ -46,7 +47,6 @@
             </div>
             <div v-for="(i, ind) in obs" :key="old_obs.length + ind">
               <input type="text" :value="i.zname" @mouseleave="highlight=null" @mouseover="highlight=i.zname" @keyup.13="edit(i,$event)" :can="true">
-              {{ }}
               <button @click="del(ind)">x</button>
             </div>
             <div>
@@ -55,22 +55,23 @@
               </button> 
             </div>
             </div>
-              <button @click="get">
+              <button v-if="open === 0" @click="get(3)">
                 <center>open</center>
               </button> 
+              <button v-if="open === 1 || open === 2" @click="adv_reset(false,open+=2)">back</button>
           </div>
           <div v-else>
             <div v-for="(file,i) in saved_files" :key=i>
-              {{ file }}
-              <button @click="file_open"> open </button>
+              {{ file.pname }}
+              <button @click="file_open(file,open-2)"> open </button>
             </div>
-            <button @click="open = false">
+            <button v-if="open === 3" @click="adv_reset(false,0)">
                 <center>back</center>
             </button> 
           </div>
         </div>
-          <div v-if="annotation === true" class='content'>
-            <Annotator :v-if="open ===false" :highlight="highlight" :getcan="getcan" :znamech="znamech" :entry="entry" :open="open" :old_obs="old_obs" :pageoffset="pageoffset" :dimensions="pdfDimensions" :obs="obs" :src="src" :setPdfSize="setPdfSize" :arrayBuffer="arrayBuffer" :name="name" :selections="selections" :addSelection="addSelection"></Annotator>
+          <div v-if="open < 3" class='content'>
+            <Annotator :highlight="highlight" :getcan="getcan" :znamech="znamech" :open="open" :old_obs="old_obs" :pageoffset="pageoffset" :dimensions="pdfDimensions" :obs="obs" :src="src" :setPdfSize="setPdfSize" :arrayBuffer="arrayBuffer" :name="name" :selections="selections" :addSelection="addSelection"></Annotator>
             <!--div v-for="st in style" :key="st.c">
             <select name="2" id="2" :style="st.s">
               <option value="af">sdsdg</option>
@@ -80,7 +81,7 @@
             </div-->
           </div>
       </div>
-      <button v-if="!open" @click="purpose=true">back</button>
+      <button v-if="open === 0 || open === 4" @click="adv_reset(true,0)">back</button>
     </div>
   </div>
 </div>
@@ -96,6 +97,50 @@ import signin from '@/components/signin'
 import signup from '@/components/signup'
 import filler from '@/components/filler'
 
+function initialise() {
+  return {
+    purpose: true,
+    signup: false,
+    signin: false,
+    login: true,
+    n_file: null,
+    // annotation: true,
+    // saved_files: [],
+    highlight: null,
+    can: false,
+    sdel: false,
+    sed: false,
+    scre: false,
+    del_obs: [],
+    ed_obs: [],
+    zname: '',
+    // entry: ['mohamed zameel', 'ponnath [h]', 'pathazhakad', 'kodungallur', 'trissur'],
+    open: 0,
+    change_st: false,
+    ch_cordinates: null,
+    change_an: null,
+    editid: null,
+    o_editid: null,
+    pageoffset: null,
+    c: 0,
+    pid: null,
+    style: [],
+    old_obs: [],
+    req1_stat: false,
+    // change: false,
+    file: null,
+    obs: [],
+    src: null,
+    arrayBuffer: null,
+    name: '',
+    selections: [],
+    pdfDimensions: {
+      height: 0,
+      width: 0
+    }
+  }
+}
+
 export default {
   name: 'editor',
   components: {
@@ -108,61 +153,48 @@ export default {
     filler
   },
   data () {
-    return {
-      purpose: true,
-      key: null,
-      signup: false,
-      signin: false,
-      login: true,
-      n_file: null,
-      annotation: true,
-      saved_files: [],
-      highlight: null,
-      can: false,
-      sdel: false,
-      sed: false,
-      scre: false,
-      del_obs: [],
-      ed_obs: [],
-      zname: '',
-      entry: ['mohamed zameel', 'ponnath [h]', 'pathazhakad', 'kodungallur', 'trissur'],
-      open: false,
-      change_st: false,
-      ch_cordinates: null,
-      change_an: null,
-      editid: null,
-      o_editid: null,
-      pageoffset: null,
-      c: 0,
-      pid: null,
-      style: [],
-      old_obs: [],
-      req1_stat: false,
-      change: false,
-      file: null,
-      obs: [],
-      src: null,
-      arrayBuffer: null,
-      name: '',
-      selections: [],
-      pdfDimensions: {
-        height: 0,
-        width: 0
-      }
-    }
+    return {...initialise(), ...{key: null, saved_files: []}}
   },
   created () {
     console.log('Editor created')
     console.log(this.pdfDimensions)
   },
   methods: {
-    async file_open(pid) {
-      let data = await fetch(`http://127.0.0.1:8000/pdf/${pid}`,{
+    advanced_reset () {
+      Object.assign(this.$data,{...initialise(), ...{key: null, saved_files: this.saved_files}})
+    },
+    adv_reset (p,o) {
+      Object.assign(this.$data, {...initialise(), ...{key: this.key, saved_files: this.saved_files}})
+      this.login = false
+      this.purpose = p
+      this.open = o
+    },
+    // reset (o) {
+    //   this.n_file = null
+    //   this.file = null
+    //   this.arrayBuffer = null
+    //   this.obs = []
+    //   this.old
+    //   this.open = o
+    // }, 
+    async file_open(file,o) {
+      this.open = o
+      let filename = file.pname
+      console.log(filename)
+      filename = filename.replace('.pdf',`${this.key.slice(0,3)}${file.pid}.pdf`)
+      let data = await fetch(`http://127.0.0.1:8000/${filename}`,{
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       })
+      console.log(data)
       data = await data.blob()
+      data['name'] = file.pname
+      this.n_file = data
+      data = await this.$http.get(`http://127.0.0.1:8000/pdf/${file.pid}?key=${this.key}`)
+      
+      this.pid = data.body.pid
+      this.old_obs = data.body.zones
       // .then(function (data) {
           // console.log(data)
           // let binStr = btoa(encodeURIComponent(data.body).replace(/%([0-9A-F]{2})/g,
@@ -179,13 +211,13 @@ export default {
           // this.n_file = new Blob(bytes)
           // this.n_file = new Blob(data.body)
           console.log(this.n_file)
-          this.open = false
+          // this.open = false
           this.annotation = true
-        })
-      }
+        // })
     },
-    f_purpose (annotation) {
-      this.annotation = annotation,
+    f_purpose (o) {
+      this.open = o
+      // this.annotation = annotation,
       this.purpose = false
     },
     async f_signin (i,u,l,key) {
@@ -196,12 +228,13 @@ export default {
       this.key = key
       if(!l) 
       {
-        let data = this.$http.get(`http://127.0.0.1:8000/pdf?key=${key}`)
+        let data = await this.$http.get(`http://127.0.0.1:8000/pdf?key=${key}`)
         console.log(data)
         if(data !== undefined) {
-          this.saved_files = data.body.map((item) => {
-            return item.pname
-          })
+          // this.saved_files = data.body.map((item) => {
+          //   return item.pname
+          // })
+          this.saved_files = data.body
         }
           console.log(this.saved_files)
       }
@@ -264,29 +297,34 @@ export default {
       d.zname = event.target.value
     },
     addfile (file) {
+      console.log(this.saved_files)
       this.file = file
-      // console.log(file)
-      if (this.saved_files.includes(file.name)) {
-        this.annotation = false
-        alert('already annoted file')
-      } else {
-        this.annotation = true
-      }
-      // this.saved_files = []
-    },
-    async get () {
-      let data = await this.$http.get(`http://127.0.0.1:8000/pdf?key=${this.key}`)
-        console.log(data)
-        if(data !== undefined) {
-          this.saved_files = data.body.map((item) => {
-            return item.pname
-          })
+      if(this.open === 0) {
+        if (this.saved_files.some((item) => item.pname === file.name)) {
+          // this.annotation = false
+          this.file = null
+          return 0
         }
-        console.log(this.saved_files)
-        this.open = true
+      }
+      return 1
+      // this.saved_files = []
+     
+    },
+    async get (o) {
+      this.arrayBuffer = null
+      // let data = await this.$http.get(`http://127.0.0.1:8000/pdf?key=${this.key}`)
+      //   console.log(data)
+      //   if(data !== undefined) {
+      //     // this.saved_files = data.body.map((item) => {
+      //     //   return item.pname
+      //     // })
+      //     this.saved_files = data.body
+      //   }
+      //   console.log(this.saved_files)
+        this.open = o
     },
     post () {
-      if (this.change) {
+      if (this.change && this.open ===0) {
         let data = new FormData()
         data.append('pfile', this.file)
         data.append('key',this.key)
@@ -323,11 +361,12 @@ export default {
             // console.log(data.pid)
             this.change = false
             this.req1_stat = false
-            this.saved_files = [...this.saved_files, data.body.pname]
+            this.saved_files = [...this.saved_files, data.body]
             this.poost()
           }).catch(function (data) {
             console.log('From catch')
           })
+          return 0
       }
     },
     poost () {
@@ -547,6 +586,15 @@ export default {
 }
 
 .sidebar {
+  position: relative;
+  width: 400px;
+  top: 0;
+  left: 0;
+  padding: 10px;
+  align-content: center
+}
+
+.filler {
   position: relative;
   width: 400px;
   top: 0;

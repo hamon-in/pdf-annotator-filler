@@ -11,7 +11,7 @@
       <div class="area-select">
       <SelectionPreview :znamech="znamech" :coordinates="coordinates" v-if="arrayBuffer"></SelectionPreview>
       <AreaSelect :highlight="null" :open="open" :coordinates="coordinates" ref="activeSelector" color="rgb(0,255,0)" active="true"></AreaSelect>
-      <div v-if="open === false">
+      <div v-if="open < 2">
       <AreaSelect v-for="(ob,ind) in obs"
         :key="old_obs.length + ind"
         :coordinates="ob"
@@ -19,11 +19,9 @@
         :pageOffset_top="ob.pageOffset_top"
         :pageOffset_left="ob.pageOffset_left"
         :dimensions="dimensions"
-        :open="false"
-        :entry="entry"
+        :open="open"
         :highlight="highlight"
       ></AreaSelect>
-      </div>
       <AreaSelect v-for="(old_ob,o_ind) in old_obs"
         :key="o_ind"
         :keyid="o_ind"
@@ -33,9 +31,9 @@
         :pageOffset_left="old_ob.pageOffset_left"
         :dimensions="dimensions"
         :open="open"
-        :entry="entry"
         :highlight="highlight"
-      >{{this.o_ind}}</AreaSelect>
+      ></AreaSelect>
+      </div>
       <!--div v-for="coordinate in coordinates" :key='coordinate'>
       <select name="2" id="2">
         <option value="af">sdsdg</option>
@@ -144,7 +142,7 @@ export default {
       event.stopPropagation()
       event.preventDefault()
       this.down = false
-      if (this.open === false) {
+      if (this.open < 2) {
         this.addSelection(this.coordinates)
         this.reset()
       }

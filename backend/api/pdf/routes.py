@@ -54,7 +54,7 @@ def pdf_create(*args, **kwargs):
 	#save to database
 	db.session.add(pdf)
 	db.session.commit()
-	pfile.save(pdfs_folder + pfile.filename + str(pdf.pid))
+	pfile.save(pdfs_folder + pfile.filename[:-4] + kwargs['key'][:3] + str(pdf.pid) + '.pdf')
 	return pdf_schema.jsonify(pdf)
 
 @app.route('/pdf/fill/<int:pid>', endpoint = 'pdf_fill')

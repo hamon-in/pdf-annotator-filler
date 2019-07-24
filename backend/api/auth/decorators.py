@@ -24,6 +24,7 @@ def logged(func):
                 }), status_codes['BAD_REQUEST']
             #user valid
             kwargs['uid'] = user.id
+            kwargs['key'] = key
 
         except KeyError:
             return jsonify({

@@ -5,8 +5,8 @@
       <option value="">Option 2</option>
     </select-->
     <div class='selection-box' :style="styleObject">
-      <span v-if="open === false">{{ name }}</span>
-      <span v-if="open === true">{{ entry[keyid] }}</span>
+      <span>{{ name }}</span>
+      <!-- <span v-if="open === true">{{ entry[keyid] }}</span> -->
       <!--input type="text" :value="name"-->
     </div>
   </div>
@@ -17,7 +17,7 @@ import randomColor from 'randomcolor'
 
 export default {
   name: 'area-select',
-  props: ['coordinates', 'name', 'active', 'dimensions', 'pageoffset_top', 'pageoffset_left', 'open', 'entry', 'keyid', 'highlight'],
+  props: ['coordinates', 'name', 'active', 'dimensions', 'pageoffset_top', 'pageoffset_left', 'open', 'keyid', 'highlight'],
   created () {
     // console.log(this.entry)
     // console.log(this.keyid)
@@ -52,7 +52,7 @@ export default {
           display: 'none'
         }
       }
-      if (this.open === false) {
+      // if (this.open < 2) {
         if (this.coordinates.zname === this.highlight) {
           return {
             // left: this.coordinates.lx + this.pageoffset.left + 'px',
@@ -80,19 +80,19 @@ export default {
             background: this.color.replace(/\)$/, ', 0.05)').replace('rgb(', 'rgba(')
           }
         }
-      } else {
-        return {
-          // left: this.coordinates.lx + this.pageoffset.left + 1 + 'px',
-          // top: this.dimensions.height - this.coordinates.ly + this.pageoffset.top - 5 + 'px',
-          // width: this.coordinates.rx - this.coordinates.lx + 'px',
-          // height: this.coordinates.ly - this.coordinates.ry + 'px',
-          left: this.coordinates.left + this.coordinates.pageOffset_left + 'px',
-          top: this.coordinates.top + this.coordinates.pageOffset_top - 5 + 'px',
-          width: this.coordinates.width + 'px',
-          height: this.coordinates.height + 'px',
-          opacity: 1
-        }
-      }
+      // } else {
+      //   return {
+      //     // left: this.coordinates.lx + this.pageoffset.left + 1 + 'px',
+      //     // top: this.dimensions.height - this.coordinates.ly + this.pageoffset.top - 5 + 'px',
+      //     // width: this.coordinates.rx - this.coordinates.lx + 'px',
+      //     // height: this.coordinates.ly - this.coordinates.ry + 'px',
+      //     left: this.coordinates.left + this.coordinates.pageOffset_left + 'px',
+      //     top: this.coordinates.top + this.coordinates.pageOffset_top - 5 + 'px',
+      //     width: this.coordinates.width + 'px',
+      //     height: this.coordinates.height + 'px',
+      //     opacity: 1
+      //   }
+      // }
     }
   }
 }

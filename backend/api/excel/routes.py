@@ -3,15 +3,17 @@ from flask import request, jsonify, render_template
 from api import app, db
 from api.auth.decorators import logged
 from api.pdf.decorators import belongs_to
+from flask_cors import cross_origin
 
 @app.route('/upload', endpoint = 'excel_upload')
+@cross_origin(supports_credentials=True)
 @logged
 def excel_upload():
 	return render_template('excel_uploader.html')
 
 @app.route('/upload/create', methods=['POST'], endpoint = 'excel_create')
+@cross_origin(supports_credentials=True)
 @logged
-@belongs_to
 def excel_create():
 	efile = request.files['excel']
 	ename = efile.filename
@@ -24,10 +26,10 @@ def excel_create():
 		db.session.commit()
 	else:
 		return jsonify({
-			'error': 'invalid request',
-			'reason': 'requested resource does not belongs to the current user'
+			'error': 'Invalid request',
+			'reason': 'Requested resource does not belongs to the current user'
 		}), 400
 	
 	return jsonify({
-		'success': 'file uploaded successfully'
+		'success': 'File uploaded successfully'
 	}), 200

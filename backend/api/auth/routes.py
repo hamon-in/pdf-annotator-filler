@@ -1,5 +1,4 @@
 from api.auth.models import User
-from api.status_codes import status_codes
 from api import bcrypt, app, db
 from flask import jsonify, request
 from api.auth.decorators import logged
@@ -9,12 +8,14 @@ from api.auth.utils import (
     validate_username,
     gen_key
 )
+from flask_cors import cross_origin
 
 @app.route('/auth/register', methods = ['POST'])
+@cross_origin(supports_credentials=True)
 def auth_register():
     #response object
     resp = {}
-    status = status_codes['SUCCESS']
+    status = 200
     
     try:
         username = validate_username(request.json['username'])
@@ -25,28 +26,30 @@ def auth_register():
             user = User(email[2], username[2], password[2])
             db.session.add(user)
             db.session.commit()
-            resp['success'] = 'registeration successfull'
+            resp['success'] = 'Account created successfully'
 
         else:
-            resp['error'] = 'registeration failed'
+            resp['error'] = 'Registeration failed'
             resp['reason'] = {
                 'username': username[1],
                 'password': password[1],
                 'email': email[1]
             }
+            status = 400
 
     except KeyError:
-        resp['error'] = 'registeration failed'
+        resp['error'] = 'Registeration failed'
         resp['reason'] = 'username, password and email required'
-        status = status_codes['BAD_REQUEST']
+        status = 400
 
     return jsonify(resp), status
 
 @app.route('/auth/login', methods = ['POST'])
+@cross_origin(supports_credentials=True)
 def auth_login():
     #response object
     resp = {}
-    status = status_codes['SUCCESS']
+    status = 200
     
     try:
         username = request.json['username']
@@ -64,15 +67,17 @@ def auth_login():
                     db.session.commit()
                 resp['key'] = user.key
             else:
-                resp['error'] = 'login failed'
-                resp['reason'] = 'invalid username or password'
+                resp['error'] = 'Login failed'
+                resp['reason'] = 'Invalid username or password'
+                status = 400
         else:
-            resp['error'] = 'login failed'
-            resp['reason'] = 'invalid username or password'
+            resp['error'] = 'Login failed'
+            resp['reason'] = 'Invalid username or password'
+            status = 400
     
     except KeyError:
-        resp['error'] = 'login falied'
-        resp['reason'] = 'username and password field required'
-        status = status_codes['BAD_REQUEST']
+        resp['error'] = 'Login falied'
+        resp['reason'] = 'sername and password field required'
+        status = 400
 
     return jsonify(resp), status

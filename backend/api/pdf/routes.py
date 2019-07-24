@@ -6,10 +6,12 @@ from flask import request, jsonify
 from api.auth.decorators import logged
 from api.pdf.decorators import belongs_to
 from os.path import dirname,abspath
+from flask_cors import cross_origin
 
 pdfs_folder = dirname(dirname(abspath(__file__))) + '/static/'
 
 @app.route('/pdf', endpoint = 'pdf_all')
+@cross_origin(supports_credentials=True)
 @logged
 def pdf_all(*args, **kwargs):
 	pdfs = pdfs_schema.dump(Pdf.query.filter_by(uid = kwargs.get('uid')))
@@ -45,6 +47,7 @@ def pdf_get_pdf(pid,*args,**kwargs):
 	return jsonify(output)
 
 @app.route('/pdf/create', methods=['POST'], endpoint = 'pdf_create')
+@cross_origin(supports_credentials=True)
 @logged
 def pdf_create(*args, **kwargs):
 	pfile = request.files['pfile']
@@ -58,6 +61,7 @@ def pdf_create(*args, **kwargs):
 	return pdf_schema.jsonify(pdf)
 
 @app.route('/pdf/fill/<int:pid>', endpoint = 'pdf_fill')
+@cross_origin(supports_credentials=True)
 @logged
 @belongs_to
 def pdf_fill(pid):

@@ -5,12 +5,13 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter,A4
 from api.pdf.models import Pdf
 import datetime
+from os.path import dirname
 import os
 from flask import jsonify, send_file
 import zipfile
 
 def create_zip(folder_path, exceptions = []):
-	cwd = os.getcwd()
+	cwd = os.path.join(dirname(dirname(__file__)),'static')
 	os.chdir(folder_path)
 	with zipfile.ZipFile('pdf.zip', 'w') as myzip:
 		for r,d,f in os.walk(folder_path):
@@ -23,9 +24,9 @@ def create_dir():
 	#unique folder name
 	folder_name = datetime.datetime.now().strftime('%s')
 	#folder doesn't exists
-	if not os.path.exists(os.path.join(os.getcwd(),'zip',folder_name)):
-		os.mkdir(os.path.join(os.getcwd(),'zip',folder_name))
-		return os.path.join(os.getcwd(),'zip',folder_name)
+	if not os.path.exists(os.path.join(dirname(dirname(__file__)),'static','zip',folder_name)):
+		os.mkdir(os.path.join(dirname(dirname(__file__)),'static','zip',folder_name))
+		return os.path.join(dirname(dirname(__file__)),'static','zip',folder_name)
 	return None
 
 def fill_pdf(folder_path, pdf_path, data, i):
@@ -102,6 +103,7 @@ def gen_pdf(pid):
 		})
 	#get pdf from db
 	pdf = Pdf.query.get(pid)
+
 	pfile = pdf.pfile
 	pname = pdf.pname
 	#set path to pdf and save pdf
@@ -111,4 +113,4 @@ def gen_pdf(pid):
 	#read excel and fill pdf
 	process_excel(pdf, folder_path, pdf_path)
 	create_zip(folder_path, [pname, pdf.ename])
-	return send_file(os.path.join(folder_path,'pdf.zip'))
+	return jsonify({'path': pdf_path})#send_file(os.path.join(folder_path,'pdf.zip'), as_attachment=True)

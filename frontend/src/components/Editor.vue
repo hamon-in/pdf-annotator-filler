@@ -182,16 +182,17 @@ export default {
       let filename = file.pname
       console.log(filename)
       filename = filename.replace('.pdf',`${this.key.slice(0,3)}${file.pid}.pdf`)
-      let data = await fetch(`http://127.0.0.1:8000/${filename}`,{
+      let data = await fetch(`http://127.0.0.1:8500/${filename}`,{
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       })
       console.log(data)
       data = await data.blob()
+      console.log(data)
       data['name'] = file.pname
       this.n_file = data
-      data = await this.$http.get(`http://127.0.0.1:8000/pdf/${file.pid}?key=${this.key}`)
+      data = await this.$http.get(`http://127.0.0.1:8500/pdf/${file.pid}?key=${this.key}`)
       
       this.pid = data.body.pid
       this.old_obs = data.body.zones
@@ -228,7 +229,7 @@ export default {
       this.key = key
       if(!l) 
       {
-        let data = await this.$http.get(`http://127.0.0.1:8000/pdf?key=${key}`)
+        let data = await this.$http.get(`http://127.0.0.1:8500/pdf?key=${key}`)
         console.log(data)
         if(data !== undefined) {
           // this.saved_files = data.body.map((item) => {
@@ -312,7 +313,7 @@ export default {
     },
     async get (o) {
       this.arrayBuffer = null
-      // let data = await this.$http.get(`http://127.0.0.1:8000/pdf?key=${this.key}`)
+      // let data = await this.$http.get(`http://127.0.0.1:8500/pdf?key=${this.key}`)
       //   console.log(data)
       //   if(data !== undefined) {
       //     // this.saved_files = data.body.map((item) => {
@@ -335,7 +336,7 @@ export default {
         // }
         this.req1_stat = true
         // console.log(this.name)
-        this.$http.post('http://127.0.0.1:8000/pdf/create',
+        this.$http.post('http://127.0.0.1:8500/pdf/create',
         data,
           {
             headers: {
@@ -377,7 +378,7 @@ export default {
         // fd.append('zones', this.obs.cordinates)
         // console.log(this.obs.cordinates)
         if (this.scre) {
-          this.$http.post('http://127.0.0.1:8000/zone/create', {
+          this.$http.post('http://127.0.0.1:8500/zone/create', {
             pid: this.pid,
             zones: this.obs,
             key: this.key
@@ -400,7 +401,7 @@ export default {
           })
         }
         if (this.sed) {
-          this.$http.put('http://127.0.0.1:8000/zone/update', { zones: this.ed_obs,key: this.key }, {
+          this.$http.put('http://127.0.0.1:8500/zone/update', { zones: this.ed_obs,key: this.key }, {
             headers: {
               'content-type': 'application/json'
             }
@@ -417,7 +418,7 @@ export default {
         }
         if (this.sdel) {
           console.log(this.del_obs)
-          this.$http.delete('http://127.0.0.1:8000/zone/delete', {body: { zids: this.del_obs,key: this.key }}).then(function (data) {
+          this.$http.delete('http://127.0.0.1:8500/zone/delete', {body: { zids: this.del_obs,key: this.key }}).then(function (data) {
             console.log(data)
             console.log(this.obs)
             console.log('delete finished')

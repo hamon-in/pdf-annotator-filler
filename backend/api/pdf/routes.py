@@ -2,7 +2,7 @@ from api import app, db, bcrypt
 from api.pdf.models import Pdf
 from api.pdf.schema import pdf_schema, pdfs_schema
 from api.pdf.utils import gen_pdf
-from flask import request, jsonify
+from flask import request, jsonify,send_from_directory
 from api.auth.decorators import logged
 from api.pdf.decorators import belongs_to
 from os.path import dirname,abspath
@@ -51,18 +51,22 @@ def pdf_get_pdf(pid,*args,**kwargs):
 @logged
 def pdf_create(*args, **kwargs):
 	pfile = request.files['pfile']
+	count = db.session.query(Pdf).count()
+	f = pfile
 	#create a pdf instance by passing respective data
-	pdf = Pdf(pfile.filename)
+	pfile.save(pdfs_folder + pfile.filename[:-4] + kwargs['key'][:3] + str(count+1) + '.pdf')
+	pdf = Pdf(pfile.filename,f.read())
 	pdf.uid = kwargs['uid']
 	#save to database
 	db.session.add(pdf)
 	db.session.commit()
-	pfile.save(pdfs_folder + pfile.filename[:-4] + kwargs['key'][:3] + str(pdf.pid) + '.pdf')
-	return pdf_schema.jsonify(pdf)
+	return jsonify({'pfile': pdf.pfile})
+	# return pdf_schema.jsonify(pdf)
 
 @app.route('/pdf/fill/<int:pid>', endpoint = 'pdf_fill')
 @cross_origin(supports_credentials=True)
 @logged
 @belongs_to
-def pdf_fill(pid):
+def pdf_fill(pid,*args,**kwargs):
+	# return send_from_directory(pdfs_folder,filename="EPFS Form$2b1.pdf",as_attatchment=True)
 	return gen_pdf(pid)

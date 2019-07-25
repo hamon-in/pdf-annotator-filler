@@ -1,6 +1,5 @@
 from api.auth.models import User
 from api.pdf.models import Pdf
-from api.status_codes import status_codes
 from flask import request, jsonify
 
 def belongs_to(func):

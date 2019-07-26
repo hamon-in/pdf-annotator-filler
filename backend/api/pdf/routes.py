@@ -7,7 +7,6 @@ from api.auth.decorators import logged
 from api.pdf.decorators import belongs_to
 from os.path import dirname,abspath
 from flask_cors import cross_origin
-from api.excel.routes import excel_create 
 
 pdfs_folder = dirname(dirname(abspath(__file__))) + '/static/'
 
@@ -63,11 +62,15 @@ def pdf_create(*args, **kwargs):
 	db.session.commit()
 	return pdf_schema.jsonify(pdf)
 
-
-@app.route('/pdf/fill/<int:pid>', endpoint = 'pdf_fill')
+@app.route('/pdf/fill/<int:pid>', endpoint = 'pdf_fill',methods=['POST','GET'])
 @cross_origin(supports_credentials=True)
 @logged
 @belongs_to
 def pdf_fill(pid,*args,**kwargs):
+	efile = request.files['excel']
+	path = gen_pdf(pid,efile)
+	if(request.method == 'POST'):
+		return jsonify({'path': path})
+	else:
+		return send_from_directory(pdfs_folder+'zip/'+path+'/',filename='pdf.zip',as_attachment=True)
 	# return send_from_directory(pdfs_folder,filename="EPFS Form$2b1.pdf",as_attatchment=True)
-	return gen_pdf(pid)

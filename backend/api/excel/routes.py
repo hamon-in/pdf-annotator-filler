@@ -19,11 +19,11 @@ def excel_create(*args, **kwargs):
 		pdf.ename = ename
 		db.session.commit()
 	else:
-		return {
+		return jsonify({
 			'error': 'Invalid request',
 			'reason': 'Requested resource does not belongs to the current user'
-		}
+		}), 400
 	
-	return {
+	return jsonify({
 		'success': 'File uploaded successfully'
-	}
+	}), 200

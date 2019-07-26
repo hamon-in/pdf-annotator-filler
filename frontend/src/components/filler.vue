@@ -40,14 +40,18 @@ export default {
             data.append('pid', this.pid)
             data.append('excel', this.excel)
             data.append('key', this.u_key)
-            await this.$http.post(`http://127.0.0.1:8500/upload/create`, data, {
+            // await this.$http.post(`http://127.0.0.1:8500/upload/create`, data, {
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data'
+            //     }
+            // }).then((data) => {
+            //     console.log(data)
+            // })
+            let dat = await this.$http.post(`http://127.0.0.1:8500/pdf/fill/${this.pid}?key=${this.u_key}`, data, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart-formdata'
                 }
-            }).then((data) => {
-                console.log(data)
             })
-            let dat = await this.$http.get(`http://127.0.0.1:8500/pdf/fill/${this.pid}?key=${this.u_key}`)
             // data = await data.blob()
             console.log(dat)
             data = await fetch(`http://127.0.0.1:8500/zip/${dat.body.path}/pdf.zip`)

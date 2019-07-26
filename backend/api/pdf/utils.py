@@ -72,11 +72,11 @@ def fill_pdf(folder_path, pdf_path, data, i):
 		output.write(outputStream)
 		outputStream.close()
 
-def process_excel(pdf, folder_path, pdf_path):
-	excel_path = os.path.join(folder_path, pdf.ename)
+def process_excel(pdf, folder_path, pdf_path,efile):
+	excel_path = os.path.join(folder_path, efile.filename)
 	#save excel to the folder
 	f = open(excel_path,'wb')
-	f.write(pdf.efile)
+	f.write(efile.read())
 	f.close()
 	#read excel
 	excel = pd.read_excel(excel_path)
@@ -94,7 +94,7 @@ def process_excel(pdf, folder_path, pdf_path):
 		#generate pdf for each record
 		fill_pdf(folder_path,pdf_path,arr[i],i)
 		
-def gen_pdf(pid):
+def gen_pdf(pid,efile):
 	folder_path,folder_name = create_dir()
 	#if exists send 500 error
 	if folder_path == None:
@@ -111,6 +111,6 @@ def gen_pdf(pid):
 	f = open(pdf_path,'wb')
 	f.write(pfile)
 	#read excel and fill pdf
-	process_excel(pdf, folder_path, pdf_path)
+	process_excel(pdf, folder_path, pdf_path,efile)
 	create_zip(folder_path, [pname, pdf.ename])
-	return jsonify({'path': folder_name})#send_file(os.path.join(folder_path,'pdf.zip'), as_attachment=True)
+	return folder_name #send_file(os.path.join(folder_path,'pdf.zip'), as_attachment=True)

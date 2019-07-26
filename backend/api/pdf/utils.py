@@ -26,8 +26,8 @@ def create_dir():
 	#folder doesn't exists
 	if not os.path.exists(os.path.join(dirname(dirname(__file__)),'static','zip',folder_name)):
 		os.mkdir(os.path.join(dirname(dirname(__file__)),'static','zip',folder_name))
-		return os.path.join(dirname(dirname(__file__)),'static','zip',folder_name)
-	return None
+		return os.path.join(dirname(dirname(__file__)),'static','zip',folder_name),folder_name
+	return None,None
 
 def fill_pdf(folder_path, pdf_path, data, i):
 	zones = []
@@ -95,7 +95,7 @@ def process_excel(pdf, folder_path, pdf_path):
 		fill_pdf(folder_path,pdf_path,arr[i],i)
 		
 def gen_pdf(pid):
-	folder_path = create_dir()
+	folder_path,folder_name = create_dir()
 	#if exists send 500 error
 	if folder_path == None:
 		return jsonify({
@@ -113,4 +113,4 @@ def gen_pdf(pid):
 	#read excel and fill pdf
 	process_excel(pdf, folder_path, pdf_path)
 	create_zip(folder_path, [pname, pdf.ename])
-	return jsonify({'path': pdf_path})#send_file(os.path.join(folder_path,'pdf.zip'), as_attachment=True)
+	return jsonify({'path': folder_name})#send_file(os.path.join(folder_path,'pdf.zip'), as_attachment=True)

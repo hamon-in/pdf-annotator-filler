@@ -21,7 +21,7 @@ export default {
         self = this
         document.querySelector('#submit').addEventListener('click', function (e) {
             e.preventDefault()
-            self.$http.post('http://127.0.0.1:8000/auth/login', {
+            self.$http.post('http://127.0.0.1:8500/auth/login', {
                 username: self.username,
                 password: self.password
             }).then(data => {

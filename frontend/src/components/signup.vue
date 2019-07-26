@@ -24,7 +24,7 @@ export default {
         self = this
         document.querySelector('#submit').addEventListener('click',async function (e) {
             e.preventDefault()
-            await self.$http.post('http://127.0.0.1:8000/auth/register', {
+            await self.$http.post('http://127.0.0.1:8500/auth/register', {
                 email: self.email,
                 username: self.username,
                 password: self.password

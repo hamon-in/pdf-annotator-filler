@@ -2,11 +2,12 @@ from api import app, db, bcrypt
 from api.pdf.models import Pdf
 from api.pdf.schema import pdf_schema, pdfs_schema
 from api.pdf.utils import gen_pdf
-from flask import request, jsonify,send_from_directory
+from flask import request, jsonify,send_from_directory,send_file
 from api.auth.decorators import logged
 from api.pdf.decorators import belongs_to
 from os.path import dirname,abspath
 from flask_cors import cross_origin
+from api.excel.routes import excel_create 
 
 pdfs_folder = dirname(dirname(abspath(__file__))) + '/static/'
 
@@ -52,16 +53,16 @@ def pdf_get_pdf(pid,*args,**kwargs):
 def pdf_create(*args, **kwargs):
 	pfile = request.files['pfile']
 	count = db.session.query(Pdf).count()
-	f = pfile
 	#create a pdf instance by passing respective data
 	pfile.save(pdfs_folder + pfile.filename[:-4] + kwargs['key'][:3] + str(count+1) + '.pdf')
+	f = open(pdfs_folder + pfile.filename[:-4] + kwargs['key'][:3] + str(count+1) + '.pdf','rb')
 	pdf = Pdf(pfile.filename,f.read())
 	pdf.uid = kwargs['uid']
 	#save to database
 	db.session.add(pdf)
 	db.session.commit()
-	return jsonify({'pfile': pdf.pfile})
-	# return pdf_schema.jsonify(pdf)
+	return pdf_schema.jsonify(pdf)
+
 
 @app.route('/pdf/fill/<int:pid>', endpoint = 'pdf_fill')
 @cross_origin(supports_credentials=True)

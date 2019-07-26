@@ -2,7 +2,7 @@ from api import app, db, bcrypt
 from api.pdf.models import Pdf
 from api.pdf.schema import pdf_schema, pdfs_schema
 from api.pdf.utils import gen_pdf
-from flask import request, jsonify,send_from_directory,send_file
+from flask import request, jsonify,send_from_directory,send_file,make_response
 from api.auth.decorators import logged
 from api.pdf.decorators import belongs_to
 from os.path import dirname,abspath
@@ -62,15 +62,25 @@ def pdf_create(*args, **kwargs):
 	db.session.commit()
 	return pdf_schema.jsonify(pdf)
 
-@app.route('/pdf/fill/<int:pid>', endpoint = 'pdf_fill',methods=['POST','GET'])
+@app.route('/pdf/fill/<int:pid>', endpoint = 'pdf_fill',methods=['POST'])
 @cross_origin(supports_credentials=True)
 @logged
 @belongs_to
 def pdf_fill(pid,*args,**kwargs):
+	if not request.files:
+		return jsonify({
+			'error': 'Excel file missing',
+			'reason': 'Cannot find any excel file associated with the requested pdf'
+		}), 400
 	efile = request.files['excel']
-	path = gen_pdf(pid,efile)
-	if(request.method == 'POST'):
-		return jsonify({'path': path})
-	else:
-		return send_from_directory(pdfs_folder+'zip/'+path+'/',filename='pdf.zip',as_attachment=True)
+# path = gen_pdf(pid,efile)
+	# if(request.method == 'POST'):
+	# 	return jsonify({'path': path})
+	# else:
+	# 	return send_from_directory(pdfs_folder+'zip/'+path+'/',filename='pdf.zip',as_attachment=True)
 	# return send_from_directory(pdfs_folder,filename="EPFS Form$2b1.pdf",as_attatchment=True)
+	# if not request.form:
+	return gen_pdf(pid,efile)
+	# else:
+	#res = make_response()
+	#res.header.mimetype = 'multipart/form-data'

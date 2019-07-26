@@ -39,8 +39,9 @@ export default {
                     alert('invalid entry')
                 }
             })
+            console.log(self.username,self.password)
             if(!self.login) {
-                self.$http.post('http://127.0.0.1:8000/auth/login', {
+                self.$http.post('http://127.0.0.1:8500/auth/login', {
                     username: self.username,
                     password: self.password
                 }).then(data => {

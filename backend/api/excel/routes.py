@@ -1,8 +1,7 @@
 from api.pdf.models import Pdf
-from flask import request, jsonify, render_template
+from flask import request, jsonify
 from api import app, db
 from api.auth.decorators import logged
-from api.pdf.decorators import belongs_to
 from flask_cors import cross_origin
 
 @app.route('/upload/create', methods=['POST'], endpoint = 'excel_create')

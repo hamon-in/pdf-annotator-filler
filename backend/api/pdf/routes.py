@@ -53,9 +53,9 @@ def pdf_create(*args, **kwargs):
 	pfile = request.files['pfile']
 	count = db.session.query(Pdf).count()
 	#create a pdf instance by passing respective data
-	pfile.save(pdfs_folder + pfile.filename[:-4] + kwargs['key'][:3] + str(count+1) + '.pdf')
-	f = open(pdfs_folder + pfile.filename[:-4] + kwargs['key'][:3] + str(count+1) + '.pdf','rb')
-	pdf = Pdf(pfile.filename,f.read())
+	pfile.save(pdfs_folder + pfile.filename)
+	#f = open(pdfs_folder + pfile.filename[:-4] + kwargs['key'][:3] + str(count+1) + '.pdf','rb')
+	pdf = Pdf(pfile.filename)
 	pdf.uid = kwargs['uid']
 	#save to database
 	db.session.add(pdf)

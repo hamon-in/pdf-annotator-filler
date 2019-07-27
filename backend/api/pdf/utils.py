@@ -4,11 +4,13 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter,A4
 from api.pdf.models import Pdf
 import os
-from os.path import dirname
+from os.path import dirname,abspath
 import io
 from io import BytesIO
 from flask import jsonify, send_file
 import zipfile
+
+pdfs_folder = dirname(dirname(abspath(__file__))) + '/static/'
 
 def adjust_text(data, width):
 	data = list(data)
@@ -115,8 +117,8 @@ def process_excel(pdf, pdf_data,efile):
 def gen_pdf(pid,efile):
 	pdf = Pdf.query.get(pid)
 	#check if excel is attatched to it
-
-	pfile = pdf.pfile
+	f = open(pdfs_folder + '/' + pdf.pname,'rb')
+	pfile = f.read()
 	pdf_data = BytesIO(pfile)
 	pdf_data.seek(0)
 	#read excel and fill pdf

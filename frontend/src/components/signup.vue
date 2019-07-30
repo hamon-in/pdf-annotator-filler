@@ -1,5 +1,5 @@
 <template>
-    <form action="http://127.0.0.1:8000/auth/register" method="POST">
+    <form>
         <label for="e-mail">e-mail:</label><input v-model="email" type="text" placeholder='e-mail'><br>
         <label for="username">username:</label><input v-model="username" type="text" placeholder='username'><br>
         <label for="password">password:</label><input v-model="password" type="text" placeholder='password'><br>
@@ -24,7 +24,7 @@ export default {
         self = this
         document.querySelector('#submit').addEventListener('click',async function (e) {
             e.preventDefault()
-            await self.$http.post('http://127.0.0.1:8500/auth/register', {
+            await self.$http.post('http://0.0.0.0:8500/auth/register', {
                 email: self.email,
                 username: self.username,
                 password: self.password
@@ -41,7 +41,7 @@ export default {
             })
             console.log(self.username,self.password)
             if(!self.login) {
-                self.$http.post('http://127.0.0.1:8500/auth/login', {
+                self.$http.post('http://0.0.0.0:8500/auth/login', {
                     username: self.username,
                     password: self.password
                 }).then(data => {

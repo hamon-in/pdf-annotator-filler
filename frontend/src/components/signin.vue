@@ -1,5 +1,5 @@
 <template>
-        <form action="http://127.0.0.1:8000/auth/login" method="POST">
+        <form action="http://0.0.0.0:8000/auth/login" method="POST">
         <label for="username">username:</label><input v-model="username" type="text" placeholder='username'><br>
         <label for="username">password:</label><input v-model="password" type="text" placeholder='password'><br>
         <input class='btn' id="submit" type="submit" value='submit'>
@@ -21,12 +21,10 @@ export default {
         self = this
         document.querySelector('#submit').addEventListener('click', function (e) {
             e.preventDefault()
-            self.$http.post('http://127.0.0.1:8500/auth/login', {
+            self.$http.post('http://0.0.0.0:8500/auth/login', {
                 username: self.username,
                 password: self.password
             }).then(data => {
-                console.log(data)
-                console.log('prevented')
                 if(data.body.id !== undefined) {
                     self.login = false
                     self.signin = false

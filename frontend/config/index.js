@@ -4,8 +4,8 @@ var path = require('path')
 module.exports = {
   build: {
     env: require('./prod.env'),
-    index: path.resolve(__dirname, '../../backend/api/static/docs/index.html'),
-    assetsRoot: path.resolve(__dirname, '../../backend/api/static/docs'),
+    index: path.resolve(__dirname, '../../backend/api/static/index.html'),
+    assetsRoot: path.resolve(__dirname, '../../backend/api/static'),
     assetsSubDirectory: 'static1',
     // assetsPublicPath: '/kull/',
     productionSourceMap: true,

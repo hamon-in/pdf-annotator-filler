@@ -1,33 +1,19 @@
 <template>
 <div>
   <div class='login' v-if='login'>
-    <button @click='f_signin(false,true,true,null)'>signup</button>
-    <button @click='f_signin(true,false,true,null)'>signin</button>
+    <button id='l' v-if='signin' class='btn' @click='f_signin(false,true,true,null)'>signup</button>
+    <button id='l' v-if='signup' class='btn' @click='f_signin(true,false,true,null)'>signin</button>
     <signup :f_signin="f_signin" v-if='signup'></signup>
     <signin :f_signin="f_signin" v-if='signin'></signin>
   </div>
   <div v-else>
-    <button @click="advanced_reset">signout</button>
-    <div class="purpose" v-if="purpose">
-      <button @click="f_purpose(4)">filler</button>
-      <button @click="f_purpose(0)">annotator</button>
-    </div>
-    <div v-else>
-      <div class="filler" v-if="open === 2 || open === 4">
-        <h1>PDF - Filler</h1>
-        <filler v-if="open === 2" :u_key="key" :pid="pid"></filler>
-        <!-- <div v-for="(file,i) in saved_files" :key=i>
-              {{ file.pname }}
-              <button @click="file_open(file,2)"> open </button>
-            </div> -->
-      </div>
+    <button class='btn' @click="advanced_reset">signout</button>
       <div class='editor'>
         <div class='sidebar'>
-          <h1 v-if="open === 0 || (open % 2) === 1">PDF - Annotator</h1>
+          <h1>PDF - Annotator</h1>
           <Uploader v-if="open < 3" v-show="open < 1" :n_file="n_file" :addfile="addfile" :notify="newFile"></Uploader>
           <div v-if="open < 2">
-          <ZoneViewer :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="src"></ZoneViewer>
-          <PDFZoneViewer @updateob="updateobj" :dimensions="pdfDimensions" :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="arrayBuffer"></PDFZoneViewer>
+            <PDFZoneViewer @updateob="updateobj" :dimensions="pdfDimensions" :selections="selections" class='zone-viewer' :batchUpdateSelections="batchUpdateSelections" :originalFilename="name" v-if="arrayBuffer"></PDFZoneViewer>
           </div>
           <div v-if="open < 3">
             <div v-if="open < 2">
@@ -40,49 +26,38 @@
                 <div v-if="o_ind === change_an && change_st">
                   {{ f_change_an(o_i) }}
                 </div>
-                <button @click="o_editid = o_ind">edit</button>
-                <button @click="o_del(o_ind)">x</button>
-                <button @click="change_an = o_ind">change</button>
+                <button class='btn' @click="o_editid = o_ind">edit</button>
+                <button id='r' class='btn' @click="o_del(o_ind) ">x</button>
+                <button class='btn' @click="change_an = o_ind">change</button>
               </div>
             </div>
             <div v-for="(i, ind) in obs" :key="old_obs.length + ind">
               <input type="text" :value="i.zname" @mouseleave="highlight=null" @mouseover="highlight=i.zname" @keyup.13="edit(i,$event)" :can="true">
-              <button @click="del(ind)">x</button>
+              <button id='r' class='btn' @click="del(ind)">x</button>
             </div>
             <div>
-              <button @click="poost">
-                <center>submit</center>
-              </button> 
+              <input v-if='sed || sde || scre' class='btn' @click="poost" value='submit' type='submit'>
             </div>
             </div>
-              <button v-if="open === 0" @click="get(3)">
+              <button class='btn' v-if="open === 0" @click="get(3)">
                 <center>open</center>
               </button> 
-              <button v-if="open === 1 || open === 2" @click="adv_reset(false,open+=2)">back</button>
+              <button class='btn' v-if="open === 1 || open === 2" @click="adv_reset(false,open+=2)">back</button>
           </div>
           <div v-else>
             <div v-for="(file,i) in saved_files" :key=i>
               {{ file.pname }}
-              <button @click="file_open(file,open-2)"> open </button>
+              <button class='btn' @click="file_open(file,open-2)"> open </button>
             </div>
-            <button v-if="open === 3" @click="adv_reset(false,0)">
+            <button class='btn' v-if="open === 3" @click="adv_reset(false,0)">
                 <center>back</center>
             </button> 
           </div>
         </div>
           <div v-if="open < 3" class='content'>
             <Annotator :highlight="highlight" :getcan="getcan" :znamech="znamech" :open="open" :old_obs="old_obs" :pageoffset="pageoffset" :dimensions="pdfDimensions" :obs="obs" :src="src" :setPdfSize="setPdfSize" :arrayBuffer="arrayBuffer" :name="name" :selections="selections" :addSelection="addSelection"></Annotator>
-            <!--div v-for="st in style" :key="st.c">
-            <select name="2" id="2" :style="st.s">
-              <option value="af">sdsdg</option>
-              <option value="a">fadfa</option>
-            </select>
-            <input type="text" value="box1" :style="{...st.s,position: absolute}">
-            </div-->
           </div>
       </div>
-      <button v-if="open === 0 || open === 4" @click="adv_reset(true,0)">back</button>
-    </div>
   </div>
 </div>
 </template>
@@ -101,11 +76,9 @@ function initialise() {
   return {
     purpose: true,
     signup: false,
-    signin: false,
+    signin: true,
     login: true,
     n_file: null,
-    // annotation: true,
-    // saved_files: [],
     highlight: null,
     can: false,
     sdel: false,
@@ -114,7 +87,6 @@ function initialise() {
     del_obs: [],
     ed_obs: [],
     zname: '',
-    // entry: ['mohamed zameel', 'ponnath [h]', 'pathazhakad', 'kodungallur', 'trissur'],
     open: 0,
     change_st: false,
     ch_cordinates: null,
@@ -127,7 +99,6 @@ function initialise() {
     style: [],
     old_obs: [],
     req1_stat: false,
-    // change: false,
     file: null,
     obs: [],
     src: null,
@@ -169,19 +140,11 @@ export default {
       this.purpose = p
       this.open = o
     },
-    // reset (o) {
-    //   this.n_file = null
-    //   this.file = null
-    //   this.arrayBuffer = null
-    //   this.obs = []
-    //   this.old
-    //   this.open = o
-    // }, 
     async file_open(file,o) {
       this.open = o
       let filename = file.pname
       console.log(filename)
-      filename = filename.replace('.pdf',`${this.key.slice(0,3)}${file.pid}.pdf`)
+
       let data = await fetch(`http://127.0.0.1:8500/${filename}`,{
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -196,29 +159,11 @@ export default {
       
       this.pid = data.body.pid
       this.old_obs = data.body.zones
-      // .then(function (data) {
-          // console.log(data)
-          // let binStr = btoa(encodeURIComponent(data.body).replace(/%([0-9A-F]{2})/g,
-          // function toSolidBytes (match, p1) {
-          //   return String.fromCharCode('0x' + p1)
-          // }))
-          // let binStr = atob(data.body)
-          // console.log(binStr)
-          // let bytes = new Uint8Array(binStr.length)
-          // for (let i = 0; i < binStr.length; i++) {
-          //   bytes[i] = binStr.charCodeAt(i)
-          // }
-          // console.log(bytes)
-          // this.n_file = new Blob(bytes)
-          // this.n_file = new Blob(data.body)
           console.log(this.n_file)
-          // this.open = false
           this.annotation = true
-        // })
     },
     f_purpose (o) {
       this.open = o
-      // this.annotation = annotation,
       this.purpose = false
     },
     async f_signin (i,u,l,key) {
@@ -232,9 +177,6 @@ export default {
         let data = await this.$http.get(`http://127.0.0.1:8500/pdf?key=${key}`)
         console.log(data)
         if(data !== undefined) {
-          // this.saved_files = data.body.map((item) => {
-          //   return item.pname
-          // })
           this.saved_files = data.body
         }
           console.log(this.saved_files)
@@ -242,16 +184,11 @@ export default {
     },
     getcan (data) {
       this.can = data
-      // console.log(data[0].height)
     },
     znamech (data) {
       this.zname = data
     },
     f_change_an (d) {
-      // console.log(d)
-      // this.ch_cordinates.zname = d.zname
-      // this.ch_cordinates['zid'] = d.zid
-      // console.log(this.ch_cordinates)
       d.left = this.ch_cordinates.left
       d.top = this.ch_cordinates.top
       d.width = this.ch_cordinates.width
@@ -287,7 +224,6 @@ export default {
       this.sed = true
       let n = this.ed_obs.find(x => x.id === d.id)
       if (!n) {
-        // n.cordinates.zname = event.target.value
         this.ed_obs = [...this.ed_obs, d]
       }
       console.log(this.ed_obs)
@@ -302,26 +238,15 @@ export default {
       this.file = file
       if(this.open === 0) {
         if (this.saved_files.some((item) => item.pname === file.name)) {
-          // this.annotation = false
           this.file = null
           return 0
         }
       }
       return 1
-      // this.saved_files = []
      
     },
     async get (o) {
       this.arrayBuffer = null
-      // let data = await this.$http.get(`http://127.0.0.1:8500/pdf?key=${this.key}`)
-      //   console.log(data)
-      //   if(data !== undefined) {
-      //     // this.saved_files = data.body.map((item) => {
-      //     //   return item.pname
-      //     // })
-      //     this.saved_files = data.body
-      //   }
-      //   console.log(this.saved_files)
         this.open = o
     },
     post () {
@@ -329,37 +254,20 @@ export default {
         let data = new FormData()
         data.append('pfile', this.file)
         data.append('key',this.key)
-        // let config = {
-        //   header: {
-        //     'Content-Type': 'application/pdf'
-        //   }
-        // }
         this.req1_stat = true
-        // console.log(this.name)
         this.$http.post('http://127.0.0.1:8500/pdf/create',
         data,
           {
             headers: {
-              'Content-Type': 'multipart/form-data'
+              'Content-Type': 'multipart/form-data' 
             }
-          // parsedData: JSON.stringify({name: 'vyshnav'})
           }, function (data, status, request) {
             this.postResults = data
             this.ajaxRequest = false
           }).then(function (data) {
             console.log(data)
-            // console.log(data.body)
-            /* console.log([{
-              pdf: this.file,
-              name: this.name
-            }]) */
-            /* for (let i = 0; i < 20; i++) {
-              console.log('d')
-            } */
             console.log('wait finished')
-            // this.obs = data
             this.pid = data.body.pid
-            // console.log(data.pid)
             this.change = false
             this.req1_stat = false
             this.saved_files = [...this.saved_files, data.body]
@@ -373,10 +281,6 @@ export default {
     poost () {
       this.post()
       if (!this.req1_stat) {
-        // let fd = new FormData()
-        // fd.append('pid', this.pid)
-        // fd.append('zones', this.obs.cordinates)
-        // console.log(this.obs.cordinates)
         if (this.scre) {
           this.$http.post('http://127.0.0.1:8500/zone/create', {
             pid: this.pid,
@@ -388,11 +292,7 @@ export default {
             }
           }).then(function (data) {
             console.log(data)
-            // console.log(this.obs)
             console.log('finished')
-            // for (data )
-            // this.old_obs = data
-            // this.obs = []
             console.log([...this.old_obs, ...this.obs])
             this.old_obs = [...this.old_obs, ...data.body]
             console.log(this.old_obs)
@@ -409,9 +309,6 @@ export default {
             console.log(data)
             console.log(this.obs)
             console.log('edit finished')
-            // for (data )
-            // this.old_obs = data
-            // this.obs = []
             this.ed_obs = []
             this.sed = false
           })
@@ -422,9 +319,6 @@ export default {
             console.log(data)
             console.log(this.obs)
             console.log('delete finished')
-            // for (data )
-            // this.old_obs = data
-            // this.obs = []
             this.del_obs = []
             this.sdel = false
           })
@@ -433,7 +327,6 @@ export default {
     },
     updateobj (data) {
       this.obs = data
-      // console.log(data)
     },
     batchUpdateSelections: function (selections) {
       this.selections = selections
@@ -449,9 +342,6 @@ export default {
       if (coords.height === 0 || coords.width === 0) {
         return
       }
-      // console.log(coords.pageOffset)
-      // let y0 = parseInt(this.pdfDimensions.height - coords.top)
-      // let y1 = parseInt(this.pdfDimensions.height - coords.top - coords.height)
       if (this.change_an === null) {
         this.selections.push({
           id: +new Date(),
@@ -468,13 +358,8 @@ export default {
           name: 'Box' + this.selections.length
         })
         this.pageoffset = coords.pageOffset
-        // console.log(coords.pageOffset)
         this.obs = [...this.obs, {
           zname: this.zname,
-          // lx: coords.left,
-          // ly: Math.max(y0, y1),
-          // rx: coords.left + coords.width,
-          // ry: Math.min(y0, y1)
           top: coords.top,
           left: coords.left,
           height: coords.height,
@@ -484,28 +369,16 @@ export default {
           pageOffset_left: coords.pageOffset_top,
           canvas_width: this.can[coords.page - 1].width,
           canvas_height: this.can[coords.page - 1].height
-          // color: randomColor({format: 'rgb'})
         }]
         console.log(this.obs)
         this.scre = true
-        // console.log(this.obs[0].cordinates)
         this.c++
         this.style.push({
           id: this.c
-          // s: {
-          //   top: coords.top + coords.pageOffset.top + 'px',
-          //   left: coords.left + coords.pageOffset.left + 'px',
-          //   height: coords.height + 'px',
-          //   width: coords.width + 'px'
-          // }
         })
       } else {
         this.ch_cordinates = {
           zname: this.zname,
-          // lx: coords.left,
-          // ly: Math.max(y0, y1),
-          // rx: coords.left + coords.width,
-          // ry: Math.min(y0, y1)
           top: coords.top,
           left: coords.left,
           height: coords.height,
@@ -516,8 +389,6 @@ export default {
         }
         this.change_st = true
       }
-      // console.log(coords.pageOffset)
-      // console.log(this.selections)
     },
     newFile: function (data) {
       console.log('newfile')
@@ -526,14 +397,9 @@ export default {
       } else {
         this.change = true
       }
-      // console.log(data)
-      // console.log(typeof data.arrayBuffer)
       this.name = data.name
-      // console.log(data.name)
       this.src = data.src
-      // console.log(data.src)
       this.arrayBuffer = data.arrayBuffer
-      // console.log(this.arrayBuffer)
       this.selections = []
       this.obs = []
       this.old_obs = []
@@ -544,32 +410,6 @@ export default {
       this.sed = false
       this.style = []
       this.c = 0
-      /* const { convert, extract } = require("extract-pdf-by-coordinates")
-
-      let totalConsumed = 0
-      console.log(totalconsumed)
-      convert("./resume (6).pdf")
-        .then(pages => {
-          for (const page of pages) {
-            let monthConsumption = extract(
-              page,
-              { x: 300, y: 520 }, // Start position
-              { x: 345, y: 540 } // End position
-            )
-
-            // Here we need to remove commas from the extracted value,
-            monthConsumption = monthConsumption.split(",").join("")
-            // and then convert the string to number.
-            monthConsumption = parseFloat(monthConsumption)
-
-            totalConsumed += monthConsumption
-          }
-
-          console.log(totalConsumed)
-        })
-        .catch(err => {
-          console.log(err)
-        }) */
     }
   }
 }
@@ -634,4 +474,72 @@ select {
   position: relative;
   z-index: 100;
 }
+
+.login {
+  top: 10em;
+  position: relative;
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px 0 30px 0;
+  box-sizing: border-box;
+  float: left;
+  width: 50%;
+  margin: auto;
+  padding: 0 50px;
+  margin-top: 6px;
+  left: 18em;
+  text-align: center;
+}
+
+.btn {
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  margin: 5px 0;
+  opacity: 0.85;
+  display: inline-block;
+  font-size: 17px;
+  line-height: 0px;
+}
+
+input:hover,
+.btn:hover {
+  opacity: 1;
+}
+
+input[type=submit] {
+  background-color: #4CAF50;
+  height: 2rem;
+  width: 5rem;
+  color: white;
+  cursor: pointer;
+  align-items: center;
+  text-align: center;
+  display: inline-block;
+  padding: 0px;
+}
+
+#r {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 100%;
+  text-align: center;
+}
+
+#l{
+  width: 100%;
+  line-height: 20px;
+  
+}
+
+input[type=text], select {
+  width: 50%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
 </style>

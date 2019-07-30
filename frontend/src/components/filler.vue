@@ -3,7 +3,7 @@
       <h3>Drag &amp; drop your file here</h3>
       <p>or <label for="file">click to browse</label></p>
       <input type="file" id="file" name="file" @change="selected">
-      <button @click="submit">submit</button>
+      <button class='btn' @click="submit">submit</button>
     </div>
 </template>
 

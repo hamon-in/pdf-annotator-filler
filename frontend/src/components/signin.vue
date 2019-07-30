@@ -1,8 +1,8 @@
 <template>
         <form action="http://127.0.0.1:8000/auth/login" method="POST">
-        <label for="username">username</label><input v-model="username" type="text"><br>
-        <label for="username">password</label><input v-model="password" type="text"><br>
-        <button id="submit" type="submit">submit</button>
+        <label for="username">username:</label><input v-model="username" type="text" placeholder='username'><br>
+        <label for="username">password:</label><input v-model="password" type="text" placeholder='password'><br>
+        <input class='btn' id="submit" type="submit" value='submit'>
     </form>
 </template>
 
@@ -41,5 +41,11 @@ export default {
 </script>
 
 <style>
+
+form {
+        border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+    }
 
 </style>

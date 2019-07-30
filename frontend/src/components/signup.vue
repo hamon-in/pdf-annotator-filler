@@ -1,9 +1,9 @@
 <template>
     <form action="http://127.0.0.1:8000/auth/register" method="POST">
-        <label for="e-mail">e-mail</label><input v-model="email" type="text"><br>
-        <label for="username">username</label><input v-model="username" type="text"><br>
-        <label for="password">password</label><input v-model="password" type="text"><br>
-        <button id='submit' type="submit">submit</button>
+        <label for="e-mail">e-mail:</label><input v-model="email" type="text" placeholder='e-mail'><br>
+        <label for="username">username:</label><input v-model="username" type="text" placeholder='username'><br>
+        <label for="password">password:</label><input v-model="password" type="text" placeholder='password'><br>
+        <input class='btn' id='submit' type="submit" value='submit'>
     </form>
 </template>
 
@@ -56,6 +56,19 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+    form {
+        border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 0px;
+  left: 0px;
+    }
 
+    label {
+        text-align: left;
+    }
+
+    input {
+        align-content: right;
+    }
 </style>

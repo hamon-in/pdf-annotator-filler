@@ -62,17 +62,19 @@ def pdf_create(*args, **kwargs):
 	db.session.commit()
 	return pdf_schema.jsonify(pdf)
 
-@app.route('/pdf/fill/<int:pid>', endpoint = 'pdf_fill',methods=['POST'])
+@app.route('/pdf/fill/<string:pid>', methods=['POST'], endpoint = 'pdf_fill')
 @cross_origin(supports_credentials=True)
 @logged
 @belongs_to
 def pdf_fill(pid,*args,**kwargs):
+	print(pid)
 	if not request.files:
 		return jsonify({
 			'error': 'Excel file missing',
 			'reason': 'Cannot find any excel file associated with the requested pdf'
 		}), 400
 	efile = request.files['excel']
+	# pid=pid
 # path = gen_pdf(pid,efile)
 	# if(request.method == 'POST'):
 	# 	return jsonify({'path': path})

@@ -6,7 +6,7 @@
       <input type="file" id="file" name="file" @change="selected">
     </div>
     <div>
-    <span :v-show="false">dvds{{ open }}</span>
+    <span>{{ open }}</span>
     </div>
   </div>
 </template>

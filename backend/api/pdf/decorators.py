@@ -14,7 +14,12 @@ def belongs_to(func):
         #fetch user
         user = User.query.filter_by(key = key).first()
         #fetch requested pdf
-        pdf = Pdf.query.get(kwargs.get('pid'))
+        pid=kwargs.get('pid')
+        if type(pid)== str:
+            pdf=Pdf.query.filter(Pdf.pname == pid, Pdf.uid == user.id).first()
+            kwargs['pid']=pdf.pid
+        else:
+            pdf = Pdf.query.get(pid)
         if pdf and pdf.uid == user.id:
             #resource belongs to the requested user
             return func(*args, **kwargs)

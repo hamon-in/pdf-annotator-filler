@@ -31,6 +31,7 @@ export default {
             }).then(data => {
                 console.log(data)
                 console.log('prevented')
+                console.log(Object.entries(data.body).length)
                 if(Object.entries(data.body).length === 1) {
                     self.login = false
                     self.signup = false

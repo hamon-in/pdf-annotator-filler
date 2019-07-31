@@ -32,11 +32,15 @@
               </div>
             </div>
             <div v-for="(i, ind) in obs" :key="old_obs.length + ind">
+              <div v-if="old_obs.length + ind === change_an && change_st">
+                  {{ f_change_an(o_i) }}
+                </div>
               <input type="text" :value="i.zname" @mouseleave="highlight=null" @mouseover="highlight=i.zname" @keyup.13="edit(i,$event)" :can="true">
               <button id='r' class='btn' @click="del(ind)">x</button>
+              <button class='btn' @click="change_an = old_obs.length + ind">change</button>
             </div>
             <div>
-              <input v-if='sed || sde || scre' class='btn' @click="poost" value='submit' type='submit'>
+              <input v-if='sed || sdel || scre' class='btn' @click="poost" value='submit' type='submit'>
             </div>
             </div>
               <button class='btn' v-if="open === 0" @click="get(3)">

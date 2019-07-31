@@ -66,8 +66,8 @@ def pdf_create(*args, **kwargs):
 @cross_origin(supports_credentials=True)
 @logged
 @belongs_to
-def pdf_fill(pid,*args,**kwargs):
-	print(pid)
+def pdf_fill(id,*args,**kwargs):
+	print(id)
 	if not request.files:
 		return jsonify({
 			'error': 'Excel file missing',
@@ -82,7 +82,8 @@ def pdf_fill(pid,*args,**kwargs):
 	# 	return send_from_directory(pdfs_folder+'zip/'+path+'/',filename='pdf.zip',as_attachment=True)
 	# return send_from_directory(pdfs_folder,filename="EPFS Form$2b1.pdf",as_attatchment=True)
 	# if not request.form:
-	return gen_pdf(pid,efile)
+	# return jsonify({'as':'aad'})
+	return gen_pdf(id,efile)
 	# else:
 	#res = make_response()
 	#res.header.mimetype = 'multipart/form-data'

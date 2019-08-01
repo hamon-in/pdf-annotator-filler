@@ -1,58 +1,106 @@
 # PDF Annotator
 
-## To run frontend part 
-<code>
-    $ cd pdf_annotator/frontend/
-</code>
-<br>
-<code>
-    $ npm install
-</code>
+## Create virtual environment
 
-## To run frontend development server
 <code>
-    $ npm run dev
+	$ virtualenv -p python3 env
 </code>
+<br>
 
-## To create production version of frontend javascript (build)
-<code>
-    $ cd pdf_annotator/frontend/
-</code>
-<br>
-<code>
-    $ npm run build
-</code>
-<br>
-<code>
-    $ mv pdf_annotator/backend/api/static/index.html pdf_annotator/backend/api/templates/index.html 
-</code>
+## Activate virtualenv env
 
-## To run backend part
 <code>
-    $ pip install flask
+	$ source venv/bin/activate
 </code>
 <br>
-<code>
-    $ pip install Flask-Cors
-</code>
-<br>
-<code>
-    $ pip install flask-marshmallow
-</code>
-<br>
-<code>
-    $ pip install Flask-SQLAlchemy
-</code>
-<br>
-<code>
-    $ pip install Flask-Bcrypt    
-</code>
 
-## To run flask development server
+## Change current working directory
+
 <code>
-    $ cd pdf_annotator/backend    
+	$ cd pdf-annotator-filler
+</code>
+<br>
+
+## Install modules
+
+<code>
+	$ pip install -r requirements.txt
 </code>
 <br>
 <code>
-    $ python run.py
+	$ cd frontend
 </code>
+<br>
+<code>
+	$ npm install
+</code>
+<br>
+<code>
+	$ npm install vue-resource
+</code>
+<br>
+
+## To run frontend dev server
+
+<code>
+	$ cd frontend
+</code>
+<br>
+<code>
+	$ npm run dev
+</code>
+<br>
+
+## To run backend flask server
+
+<code>
+    $ cd backend
+</code>
+<br>
+<code>
+	$ python
+</code>
+<br>
+<code>
+	$ from api import db
+</code>
+<br>
+<code>
+	$ db.create_all()
+</code>
+<br>
+<code>
+	$ exit()
+</code>
+<br>
+<code>
+	$ mkdir api/templates
+</code>
+<br>
+<code>
+	$ mkdir api/static
+</code>
+<br>
+<code>
+	$ python run.py
+</code>
+<br>
+
+## To build frontend
+
+<code>
+	$ cd frontend
+</code>
+<br>
+<code>
+	$ npm build
+</code>
+<br>
+<code>
+	$ cd ..
+</code>
+<br>
+<code>
+	mv backend/api/static/index.html backend/api/templates/index.html
+</code>
+<br>

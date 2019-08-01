@@ -26,6 +26,37 @@
 <code>
 	$ pip install -r requirements.txt
 </code>
+<code>
+	$ cd backend
+</code>
+<br>
+<code>
+	$ python
+</code>
+<br>
+<code>
+	>> from api import db
+</code>
+<br>
+<code>
+	>> db.create_all()
+</code>
+<br>
+<code>
+	>> exit()
+</code>
+<br>
+<code>
+	$ mkdir api/templates
+</code>
+<br>
+<code>
+	$ mkdir api/static
+</code>
+<br>
+<code>
+	$ cd ..
+</code>
 <br>
 <code>
 	$ cd frontend
@@ -33,10 +64,6 @@
 <br>
 <code>
 	$ npm install
-</code>
-<br>
-<code>
-	$ npm install vue-resource
 </code>
 <br>
 
@@ -54,31 +81,7 @@
 ## To run backend flask server
 
 <code>
-    $ cd backend
-</code>
-<br>
-<code>
-	$ python
-</code>
-<br>
-<code>
-	$ from api import db
-</code>
-<br>
-<code>
-	$ db.create_all()
-</code>
-<br>
-<code>
-	$ exit()
-</code>
-<br>
-<code>
-	$ mkdir api/templates
-</code>
-<br>
-<code>
-	$ mkdir api/static
+	$ cd backend	
 </code>
 <br>
 <code>

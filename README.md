@@ -93,7 +93,7 @@
 </code>
 <br>
 <code>
-	$ npm build
+	$ npm run build
 </code>
 <br>
 <code>

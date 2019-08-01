@@ -101,6 +101,6 @@
 </code>
 <br>
 <code>
-	mv backend/api/static/index.html backend/api/templates/index.html
+	$ mv backend/api/static/index.html backend/api/templates/index.html
 </code>
 <br>

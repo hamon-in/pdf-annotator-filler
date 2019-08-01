@@ -3,7 +3,7 @@
 ## Create virtual environment
 
 <code>
-	$ virtualenv -p python3 env
+	$ virtualenv -p python3 venv
 </code>
 <br>
 

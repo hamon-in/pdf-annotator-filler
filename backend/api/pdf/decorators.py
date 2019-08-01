@@ -15,16 +15,20 @@ def belongs_to(func):
         user = User.query.filter_by(key = key).first()
         #fetch requested pdf
         pid=kwargs.get('pid')
-        s=type('s')
-        if type(pid)== s:
+
+        if type(pid)== str:
             pdf=Pdf.query.filter(Pdf.pname == pid, Pdf.uid == user.id).first()
             i=pdf.pid
-            # kwargs['pid']=pdf.pid
+            if pdf and pdf.uid == user.id:
+                #resource belongs to the requested user
+                return func(i,*args, **kwargs)
+                
         else:
             pdf = Pdf.query.get(pid)
+
         if pdf and pdf.uid == user.id:
             #resource belongs to the requested user
-            return func(i,*args, **kwargs)
+            return func(*args, **kwargs)
         else:
             #invalid request
             return jsonify({

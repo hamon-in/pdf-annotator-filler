@@ -18,9 +18,11 @@
 <code>
     $ cd pdf_annotator/frontend/
 </code>
+<br>
 <code>
     $ npm run build
 </code>
+<br>
 <code>
     $ mv pdf_annotator/backend/api/static/index.html pdf_annotator/backend/api/templates/index.html 
 </code>
@@ -29,15 +31,19 @@
 <code>
     $ pip install flask
 </code>
+<br>
 <code>
     $ pip install Flask-Cors
 </code>
+<br>
 <code>
     $ pip install flask-marshmallow
 </code>
+<br>
 <code>
     $ pip install Flask-SQLAlchemy
 </code>
+<br>
 <code>
     $ pip install Flask-Bcrypt    
 </code>
@@ -46,6 +52,7 @@
 <code>
     $ cd pdf_annotator/backend    
 </code>
+<br>
 <code>
     $ python run.py
 </code>

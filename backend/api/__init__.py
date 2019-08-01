@@ -17,7 +17,6 @@ ma = Marshmallow(app)
 
 #routes import
 from api import routes
-from api.excel import routes
 from api.auth import routes
 from api.pdf import routes
 from api.zones import routes

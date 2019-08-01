@@ -3,10 +3,42 @@ from api.pdf.models import Pdf
 from api.pdf.schema import pdf_schema, pdfs_schema
 from api.pdf.utils import gen_pdf
 from flask import request, jsonify,send_from_directory,send_file,make_response
-from api.auth.decorators import logged
+# from api.auth.decorators import logged
 from api.pdf.decorators import belongs_to
 from os.path import dirname,abspath
-from flask_cors import cross_origin
+from flask_cors import cross_originfrom api.auth.models import User
+
+def logged(func):
+    def check_api_key(*args, **kwargs):
+        try:
+            #get key if available
+            if request.json:
+                key = str(request.json['key'])
+            elif request.form:
+                key = str(request.form['key'])
+            elif request.args:
+                key = str(request.args.get('key'))
+            else:
+                raise KeyError
+            #fetch user using key
+            user = User.query.filter_by(key = key).first()
+            if not user:
+                return jsonify({
+                    'error': 'Authentication failed',
+                    'reason': 'Invalid api key'
+                }), 401
+            #user valid
+            kwargs['uid'] = user.id
+            kwargs['key'] = key
+
+        except KeyError:
+            return jsonify({
+                'error': 'Authentication failed',
+                'reason': 'Api key required'
+            }), 401
+        else:
+            return func(*args, **kwargs)
+    return check_api_key
 
 pdfs_folder = dirname(dirname(abspath(__file__))) + '/static/'
 

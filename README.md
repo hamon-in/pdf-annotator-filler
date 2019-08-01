@@ -26,6 +26,7 @@
 <code>
 	$ pip install -r requirements.txt
 </code>
+<br>
 <code>
 	$ cd backend
 </code>

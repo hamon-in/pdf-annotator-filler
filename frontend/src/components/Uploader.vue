@@ -20,15 +20,6 @@ export default {
       pdf_file: null
     }
   },
-  updated () {
-    // if (this.n_file !== null) {
-    //   // this.getFile(this.n_file)
-    //   console.log('sfvsfv')
-    // }
-  },
-  created () {
-    console.log('Uploader created')
-  },
   computed: {
     open () {
       if(this.n_file !== null) {
@@ -37,22 +28,6 @@ export default {
     }
   },
   methods: {
-    // n_open () {
-    //   if (this.n_file !== null) {
-    //     let reader = new FileReader()
-    //     reader.addEventListener('load', this.notify({
-    //       name: 'wefwf',
-    //       arrayBuffer: this.n_file
-    //     }), false)
-    //     reader.readAsArrayBuffer(this.n_file)
-    //     this.pdf_file = this.n_file
-    //     this.$emit('addfile', this.pdf_file)
-    //     console.log('sfvsfv')
-    //     return 1
-    //   } else {
-    //     return 0
-    //   }
-    // },
     processReaderImage: function (readerData) {
       this.notify({
         name: this.name,
@@ -67,9 +42,7 @@ export default {
     },
     getFile: function (fileList) {
       let file = fileList[0]
-      console.log(file)
       let ch = this.addfile(file)
-      // console.log(ch)
       if(!ch) {
         alert('already annoted file')
         return
@@ -85,7 +58,6 @@ export default {
         let reader = new FileReader()
         reader.addEventListener('load', this.processReaderPDF, false)
         reader.readAsArrayBuffer(file)
-        // this.pdf_file = file
       } else {
         alert('Not a PDF or image file')
       }

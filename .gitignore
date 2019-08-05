@@ -5,6 +5,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 test/unit/coverage
+!**__pycache__*
+*static
+*templates
+backend/api/site.db
 
 # Editor directories and files
 .idea

@@ -4,7 +4,6 @@
       Currently working on: <span class="filename">{{ name }}</span>
       <span class="filetype">{{ arrayBuffer ? "PDF" : "image" }}</span>
     </h3>
-    <!-- <p>If you want to zoom in/out, you'll need to use your browser zoom for the moment.</p> -->
     <div class='selection-area' @mousedown="start" @mouseup="end" @mousemove="drag" v-if="src || arrayBuffer" ref="selectionArea">
       <img :src="src" v-if="src">
       <PDF @get="getcan" :getcan="getcan" :setPdfSize="setPdfSize" :arrayBuffer="arrayBuffer" v-if="arrayBuffer"></PDF>
@@ -34,12 +33,6 @@
         :highlight="highlight"
       ></AreaSelect>
       </div>
-      <!--div v-for="coordinate in coordinates" :key='coordinate'>
-      <select name="2" id="2">
-        <option value="af">sdsdg</option>
-        <option value="a">fadfa</option>
-      </select>
-      </div-->
       </div>
     </div>
   </div>
@@ -50,7 +43,6 @@ import AreaSelect from '@/components/AreaSelect'
 import PDF from '@/components/PDF'
 import SelectionPreview from '@/components/SelectionPreview'
 import randomColor from 'randomcolor'
-// import * as JsPDF from 'jspdf'
 
 export default {
   name: 'Annotator',
@@ -58,27 +50,6 @@ export default {
     AreaSelect,
     PDF,
     SelectionPreview
-  },
-  created () {
-    console.log('Annotator created')
-    console.log(this.dimensions)
-  },
-  updated () {
-    // var doc = new JsPDF()
-    // var elementHandler = {
-    //   '#ignorePDF': function (element, renderer) {
-    //     return true
-    //   }
-    // }
-    // var source = window.document.getElementsByTagName('span')[0]
-    // doc.fromHTML(
-    //   source,
-    //   15,
-    //   15,
-    //   {
-    //     'width': 180, 'elementHandlers': elementHandler
-    //   })
-    // doc.output('dataurlnewwindow')
   },
   props: ['src', 'name', 'selections', 'addSelection', 'arrayBuffer', 'setPdfSize', 'dimensions', 'pageoffset', 'obs', 'old_obs', 'open', 'entry', 'znamech', 'getcan', 'highlight'],
   data () {
@@ -116,9 +87,6 @@ export default {
     }
   },
   methods: {
-    // znamech (data) {
-    //   this.$emit('zname', data)
-    // },
     reset: function () {
       this.coords.xa = null
       this.coords.ya = null
@@ -126,8 +94,6 @@ export default {
       this.coords.yb = null
     },
     start: function (event) {
-      // event.stopPropagation()
-      // event.preventDefault()
       this.down = true
 
       this.pageNumber = parseInt(event.target.getAttribute('data-page-number') || 1)
@@ -146,7 +112,6 @@ export default {
         this.addSelection(this.coordinates)
         this.reset()
       }
-      // console.log(this.text)
     },
     drag: function (event) {
       event.stopPropagation()

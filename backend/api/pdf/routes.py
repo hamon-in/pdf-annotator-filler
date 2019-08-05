@@ -3,10 +3,10 @@ from api.pdf.models import Pdf
 from api.pdf.schema import pdf_schema, pdfs_schema
 from api.pdf.utils import gen_pdf
 from flask import request, jsonify,send_from_directory,send_file,make_response
-# from api.auth.decorators import logged
 from api.pdf.decorators import belongs_to
 from os.path import dirname,abspath
-from flask_cors import cross_originfrom api.auth.models import User
+from flask_cors import cross_origin
+from api.auth.models import User
 
 def logged(func):
     def check_api_key(*args, **kwargs):

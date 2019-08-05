@@ -2,7 +2,7 @@
     <form>
         <label for="e-mail">e-mail:</label><input v-model="email" type="text" placeholder='e-mail'><br>
         <label for="username">username:</label><input v-model="username" type="text" placeholder='username'><br>
-        <label for="password">password:</label><input v-model="password" type="text" placeholder='password'><br>
+        <label for="password">password:</label><input v-model="password" type="password" placeholder='password'><br>
         <input class='btn' id='submit' type="submit" value='submit'>
     </form>
 </template>
@@ -29,25 +29,18 @@ export default {
                 username: self.username,
                 password: self.password
             }).then(data => {
-                console.log(data)
-                console.log('prevented')
-                console.log(Object.entries(data.body).length)
                 if(Object.entries(data.body).length === 1) {
                     self.login = false
                     self.signup = false
-                    console.log(self.login)
                 } else {
                     alert('invalid entry')
                 }
             })
-            console.log(self.username,self.password)
             if(!self.login) {
                 self.$http.post('http://0.0.0.0:8500/auth/login', {
                     username: self.username,
                     password: self.password
                 }).then(data => {
-                    console.log(data)
-                    console.log('prevented')
                     self.f_signin(false,false,false,data.body.key)
                 })
             }

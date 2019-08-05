@@ -34,26 +34,11 @@ export default {
   },
   methods: {
     loadDocument () {
-      console.log('new document')
       PDFJS.getDocument(this.arrayBuffer).then((pdf) => {
         pdf.getPage(1).then(async (page) => {
           var viewport = page.getViewport(1)
-          // let r = document.getElementsByTagName('canvas')
-          // let arr = Array.from(r).filter(function (item) {
-          //   return item
-          // })
-          // console.log(arr)
-          // console.log(arr[0].length)
-          // for (let i; r; i++) {
-          //   console.log(r[i])
-          // }
-          // console.log(viewport)
-          console.log('dd')
-          console.log(viewport.width, viewport.height)
-          console.log('ff')
           this.setPdfSize(viewport.width, viewport.height)
           this.width = viewport.width
-          // console.log(pdf)
           await this.pdfViewer.setDocument(pdf)
           window.scrollTo(0, 0)
         })
@@ -74,26 +59,20 @@ export default {
 
     setTimeout(function () {
       Array.from(document.getElementsByTagName('canvas')).forEach(item => {
-        console.log('Item: ', item.offsetHeight, item.offsetWidth)
       })
     }, 1000)
     let self = this
     setTimeout(function () {
-      console.log(document.getElementsByTagName('canvas').length)
       let set = Array.from(document.getElementsByTagName('canvas')).map((item) => {
         return { width: item.offsetWidth, height: item.offsetHeight }
       })
       self.getcan(set)
-      console.log(set)
     }, 1000)
   }
 }
 document.addEventListener('DOMContentLoaded', function (e) {
   let r = document.getElementsByTagName('canvas')
-  console.log(r)
-  console.log(r.length)
 })
-console.log('sdfnfdgkjjklvklsnvsdkvnsnklvnsdvnk')
 </script>
 
 <style>
@@ -104,21 +83,6 @@ console.log('sdfnfdgkjjklvklsnvsdkvnsnklvnsdvnk')
 .textLayer, .canvasWrapper {
   pointer-events: none;
 }
-
-/* Copyright 2014 Mozilla Foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 .textLayer {
   position: absolute;

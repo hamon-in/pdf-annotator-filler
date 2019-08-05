@@ -1,7 +1,7 @@
 <template>
         <form action="http://0.0.0.0:8000/auth/login" method="POST">
         <label for="username">username:</label><input v-model="username" type="text" placeholder='username'><br>
-        <label for="username">password:</label><input v-model="password" type="text" placeholder='password'><br>
+        <label for="username">password:</label><input v-model="password" type="password" placeholder='password'><br>
         <input class='btn' id="submit" type="submit" value='submit'>
     </form>
 </template>

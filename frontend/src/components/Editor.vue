@@ -15,32 +15,40 @@
           <div v-if="open < 3">
             <div v-if="open < 2">
             <div v-for="(o_i, o_ind) in old_obs" :key="o_ind">
-              <div v-if="o_ind ===  o_editid">
-                <input type="text" :value="o_i.zname" @keyup.13="o_edit(o_i,$event)">
+              <div v-if="o_ind ===  editid">
+                <input type="text" v-model="o_i.zname" @keyup.13="o_edit(o_i,$event)">
               </div>
               <div v-else>
-                {{ o_i.zname }}
+                <span @click="editid = o_ind" @mouseleave="highlight=null" @mouseover="highlight=o_i.zname">
+                  {{ o_i.zname }}
+                </span>
                 <div v-if="o_ind === change_an && change_st">
                   {{ f_change_an(o_i,true) }}
                 </div>
-                <button class='btn' @click="o_editid = o_ind">edit</button>
                 <button id='r' class='btn' @click="o_del(o_ind) ">x</button>
                 <button class='btn' @click="change_an = o_ind">change</button>
               </div>
             </div>
             <div v-for="(i, ind) in obs" :key="old_obs.length + ind">
-              <div v-if="old_obs.length + ind === change_an && change_st">
-                  {{ f_change_an(i,false) }}
-                </div>
-              <input type="text" v-model="i.zname" @mouseleave="highlight=null" @mouseover="highlight=i.zname" :can="true">
-              <button id='r' class='btn' @click="del(ind)">x</button>
-              <button class='btn' @click="change_an = old_obs.length + ind">change</button>
+              <div v-if="editid === old_obs.length + ind">
+                <input type="text" v-model="i.zname" @keyup.13="edit">
+              </div>
+              <div v-else>
+                <span id = 'n' @click="editid = ind + old_obs.length" @mouseleave="highlight=null" @mouseover="highlight=i.zname">
+                    {{ i.zname }}
+                  </span>
+                <div v-if="old_obs.length + ind === change_an && change_st">
+                    {{ f_change_an(i,false) }}
+                  </div>
+                <button id='r' class='btn' @click="del(ind)">x</button>
+                <button class='btn' @click="change_an = old_obs.length + ind">change</button>
+              </div>
             </div>
             <div>
               <input v-if='obs.length || ed_obs.length || del_obs.length' class='btn' @click="poost" value='submit' type='submit'>
             </div>
             </div>
-              <button class='btn' v-if="open === 0" @click="get(3)">
+              <button class='btn' v-if="check" @click="get(3)">
                 <center>open</center>
               </button> 
               <button class='btn' v-if="open === 1 || open === 2" @click="adv_reset(false,open+=2)">back</button>
@@ -72,7 +80,7 @@ import signup from '@/components/signup'
 
 function initialise() {
   return {
-    purpose: true,
+    e: false,
     signup: false,
     signin: true,
     login: true,
@@ -87,7 +95,6 @@ function initialise() {
     ch_cordinates: null,
     change_an: null,
     editid: null,
-    o_editid: null,
     pageoffset: null,
     pid: null,
     old_obs: [],
@@ -115,7 +122,16 @@ export default {
   data () {
     return {...initialise(), ...{key: null, saved_files: []}}
   },
+  computed: {
+    check () {
+      return this.open === 0 && this.saved_files.length > 0
+    }
+  },
   methods: {
+    edit () {
+      this.editid = null
+      this.highlight = null
+    },
     advanced_reset () {
       Object.assign(this.$data,{...initialise(), ...{key: null, saved_files: this.saved_files}})
     },
@@ -142,10 +158,6 @@ export default {
       this.pid = data.body.pid
       this.old_obs = data.body.zones
           this.annotation = true
-    },
-    f_purpose (o) {
-      this.open = o
-      this.purpose = false
     },
     async f_signin (i,u,l,key) {
       this.signup = u
@@ -195,12 +207,13 @@ export default {
       this.sdel = true
     },
     o_edit (d, event) {
-      d.zname = event.target.value
+      // d.zname = event.target.value
       let n = this.ed_obs.find(x => x.id === d.id)
       if (!n) {
         this.ed_obs = [...this.ed_obs, d]
       }
-      this.o_editid = null
+      this.editid = null
+      this.highlight = null
     },
     addfile (file) {
       this.file = file
@@ -306,6 +319,7 @@ export default {
           canvas_width: this.can[coords.page - 1].width,
           canvas_height: this.can[coords.page - 1].height
         }]
+        this.editid = this.obs.length + this.old_obs.length - 1
       } else {
         this.ch_cordinates = {
           zname: this.zname,
@@ -463,6 +477,10 @@ input[type=text],[type=password] {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+}
+
+#n {
+  color: blue;
 }
 
 </style>
